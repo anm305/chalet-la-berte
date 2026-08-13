@@ -84,11 +84,29 @@ async function fetchAvailability() {
   };
 }
 
+function loadRatesCsv() {
+  const file = resolve(root, "data", "rates.csv");
+  if (!existsSync(file)) return null;
+  const rates = {};
+  for (const line of readFileSync(file, "utf8").split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const [date, priceRaw] = trimmed.split(",").map((s) => s.trim());
+    if (date === "date") continue;
+    const price = Number(priceRaw);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(price) && price > 0) {
+      rates[date] = price;
+    }
+  }
+  return Object.keys(rates).length ? rates : null;
+}
+
 function jsString(value) {
   return JSON.stringify(value ?? "");
 }
 
 const availability = await fetchAvailability();
+const rates = loadRatesCsv();
 
 const airbnbNightly = Number(process.env.PUBLIC_AIRBNB_NIGHTLY_CHF || "");
 const discountPercent = Number(process.env.PUBLIC_DIRECT_DISCOUNT_PERCENT || "10");
@@ -106,7 +124,9 @@ const pricing = hasPrice
       discountPercent: safeDiscount,
       directNightly
     }
-  : null;
+  : {
+      discountPercent: safeDiscount
+    };
 
 const config = `window.CHALET_CONFIG = {
   formEndpoint: ${jsString(process.env.PUBLIC_FORM_ENDPOINT || "")},
@@ -114,6 +134,7 @@ const config = `window.CHALET_CONFIG = {
   contactEmail: ${jsString(process.env.PUBLIC_CONTACT_EMAIL || "")},
   contactPhone: ${jsString(process.env.PUBLIC_CONTACT_PHONE || "")},
   pricing: ${JSON.stringify(pricing, null, 2).replace(/\n/g, "\n  ")},
+  rates: ${JSON.stringify(rates)},
   availability: ${JSON.stringify(availability, null, 2).replace(/\n/g, "\n  ")}
 };
 `;
@@ -135,5 +156,6 @@ if (/fonts\.googleapis\.com|fonts\.gstatic\.com/i.test(html + css)) {
   throw new Error("Build check: Google Fonts request still present");
 }
 
-const calendarMode = availability ? "iCal" : "date-picker fallback";
-console.log(`Build OK — form endpoint ${process.env.PUBLIC_FORM_ENDPOINT ? "set" : "empty"}, calendar: ${calendarMode}`);
+const calendarMode = availability ? "iCal" : "interactive (Excel rates)";
+const ratesCount = rates ? Object.keys(rates).length : 0;
+console.log(`Build OK — form endpoint ${process.env.PUBLIC_FORM_ENDPOINT ? "set" : "empty"}, calendar: ${calendarMode}, rates: ${ratesCount} nights`);

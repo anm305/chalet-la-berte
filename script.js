@@ -121,9 +121,11 @@ const I18N = {
     "stay.datesHint":"Indiquez vos dates, nous vous répondons sous 24 h.",
     "stay.datesCta":"Envoyer une demande",
     "stay.calSync":"Dernière synchronisation : {date}",
+    "stay.calNoIcal":"Calendrier interactif — les nuits réservées apparaîtront après branchement iCal.",
+    "stay.calLegend":"Cliquez une arrivée, puis un départ. Les prix viennent de votre grille Excel (− remise directe).",
     "stay.priceEyebrow":"Tarif selon vos dates", "stay.priceUnit":"/ nuit",
     "stay.priceDetail":"Chalet entier · jusqu'à 15 personnes · linge inclus",
-    "stay.priceHint":"Choisissez vos dates dans le formulaire pour voir le tarif (Airbnb − remise directe).",
+    "stay.priceHint":"Choisissez vos dates sur le calendrier (ou dans le formulaire) pour voir le tarif.",
     "stay.priceCompare":"{discount} % de moins que le tarif Airbnb pour ces dates ({airbnb} CHF / nuit).",
     "stay.priceTotal":"{total} CHF pour {nights} nuits",
     "stay.priceLoading":"Calcul du tarif…",
@@ -212,9 +214,11 @@ const I18N = {
     "stay.datesHint":"Tell us your dates — we reply within 24 hours.",
     "stay.datesCta":"Send a request",
     "stay.calSync":"Last synced: {date}",
+    "stay.calNoIcal":"Interactive calendar — booked nights will appear once iCal is connected.",
+    "stay.calLegend":"Click a check-in, then a check-out. Prices come from your Excel grid (− direct discount).",
     "stay.priceEyebrow":"Rate for your dates", "stay.priceUnit":"/ night",
     "stay.priceDetail":"Whole chalet · up to 15 guests · linens included",
-    "stay.priceHint":"Pick your dates in the form to see the rate (Airbnb minus direct discount).",
+    "stay.priceHint":"Pick your dates on the calendar (or in the form) to see the rate.",
     "stay.priceCompare":"{discount}% less than the Airbnb rate for these dates ({airbnb} CHF / night).",
     "stay.priceTotal":"{total} CHF for {nights} nights",
     "stay.priceLoading":"Calculating rate…",
@@ -303,9 +307,11 @@ const I18N = {
     "stay.datesHint":"Nennen Sie uns Ihre Daten — wir antworten innert 24 Stunden.",
     "stay.datesCta":"Anfrage senden",
     "stay.calSync":"Letzte Synchronisation: {date}",
+    "stay.calNoIcal":"Interaktiver Kalender — gebuchte Nächte erscheinen nach iCal-Anbindung.",
+    "stay.calLegend":"Klicken Sie Anreise, dann Abreise. Preise aus Ihrer Excel-Tabelle (− Direktrabatt).",
     "stay.priceEyebrow":"Preis für Ihre Daten", "stay.priceUnit":"/ Nacht",
     "stay.priceDetail":"Ganzes Chalet · bis zu 15 Gäste · Bettwäsche inklusive",
-    "stay.priceHint":"Wählen Sie Ihre Daten im Formular, um den Preis zu sehen (Airbnb minus Direkt-Rabatt).",
+    "stay.priceHint":"Wählen Sie Ihre Daten im Kalender (oder im Formular), um den Preis zu sehen.",
     "stay.priceCompare":"{discount} % weniger als der Airbnb-Preis für diese Daten ({airbnb} CHF / Nacht).",
     "stay.priceTotal":"{total} CHF für {nights} Nächte",
     "stay.priceLoading":"Preis wird berechnet…",
@@ -382,15 +388,30 @@ const MONTH_NAMES = {
 };
 
 const bookedDates = new Set((CONFIG.availability && CONFIG.availability.booked) || []);
-const hasIcal = bookedDates.size > 0 || Boolean(CONFIG.availability && CONFIG.availability.syncedAt);
+const rateMap = CONFIG.rates || {};
+const discountPct = (CONFIG.pricing && CONFIG.pricing.discountPercent != null)
+  ? Number(CONFIG.pricing.discountPercent)
+  : 10;
 
 let calCursor = new Date();
 calCursor.setDate(1);
+let calCheckin = null;
+let calCheckout = null;
+
+function directPriceFor(dateStr){
+  const airbnb = rateMap[dateStr];
+  if (!Number.isFinite(airbnb)) return null;
+  return Math.round(airbnb * (1 - discountPct / 100));
+}
+
+function isoToday(){
+  return new Date().toISOString().slice(0, 10);
+}
 
 function renderCalendar(){
   const grid = document.getElementById('calendarGrid');
   const label = document.getElementById('calMonthLabel');
-  if (!grid || !label || !hasIcal) return;
+  if (!grid || !label) return;
 
   const lang = document.documentElement.getAttribute('data-lang') || 'fr';
   grid.innerHTML = '';
@@ -404,29 +425,86 @@ function renderCalendar(){
   if (startOffset < 0) startOffset = 6;
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const todayStr = new Date().toISOString().slice(0,10);
+  const todayStr = isoToday();
 
   for (let i = 0; i < startOffset; i++){
     const empty = document.createElement('div');
     empty.className = 'day empty';
     grid.appendChild(empty);
   }
+
   for (let d = 1; d <= daysInMonth; d++){
-    const cell = document.createElement('div');
+    const cell = document.createElement('button');
+    cell.type = 'button';
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const booked = bookedDates.has(dateStr);
+    const past = dateStr < todayStr;
+    const direct = directPriceFor(dateStr);
+
     cell.className = 'day';
-    if (bookedDates.has(dateStr)) cell.classList.add('unavailable');
+    cell.dataset.date = dateStr;
+    if (booked || past) cell.classList.add('unavailable');
+    else cell.classList.add('selectable');
     if (dateStr === todayStr) cell.classList.add('today');
-    cell.textContent = d;
+    if (calCheckin && dateStr === calCheckin) cell.classList.add('selected');
+    if (calCheckout && dateStr === calCheckout) cell.classList.add('selected');
+    if (calCheckin && calCheckout && dateStr > calCheckin && dateStr < calCheckout) {
+      cell.classList.add('in-range');
+    }
+
+    const num = document.createElement('span');
+    num.className = 'day-num';
+    num.textContent = d;
+    cell.appendChild(num);
+
+    if (direct != null && !booked){
+      const priceEl = document.createElement('span');
+      priceEl.className = 'day-price';
+      priceEl.textContent = String(direct);
+      cell.appendChild(priceEl);
+    }
+
+    if (!booked && !past){
+      cell.addEventListener('click', () => onCalendarDayClick(dateStr));
+    } else {
+      cell.disabled = true;
+    }
     grid.appendChild(cell);
   }
 
   const syncEl = document.getElementById('calSync');
-  if (syncEl && CONFIG.availability && CONFIG.availability.syncedAt){
-    const synced = new Date(CONFIG.availability.syncedAt);
-    const formatted = synced.toLocaleString(lang, { dateStyle: 'medium', timeStyle: 'short' });
-    syncEl.textContent = t('stay.calSync', { date: formatted });
+  if (syncEl){
+    if (CONFIG.availability && CONFIG.availability.syncedAt){
+      const synced = new Date(CONFIG.availability.syncedAt);
+      const formatted = synced.toLocaleString(lang, { dateStyle: 'medium', timeStyle: 'short' });
+      syncEl.textContent = t('stay.calSync', { date: formatted });
+    } else {
+      syncEl.textContent = t('stay.calNoIcal');
+    }
   }
+}
+
+function onCalendarDayClick(dateStr){
+  if (!calCheckin || (calCheckin && calCheckout)){
+    calCheckin = dateStr;
+    calCheckout = null;
+  } else if (dateStr <= calCheckin){
+    calCheckin = dateStr;
+    calCheckout = null;
+  } else {
+    calCheckout = dateStr;
+  }
+
+  const form = document.getElementById('contactForm');
+  if (form){
+    if (calCheckin) form.checkin.value = calCheckin;
+    if (calCheckout) form.checkout.value = calCheckout;
+    else form.checkout.value = '';
+  }
+
+  renderCalendar();
+  if (calCheckin && calCheckout) refreshQuoteFromForm();
+  else setupPricing();
 }
 
 const calPrev = document.getElementById('calPrev');
@@ -442,15 +520,8 @@ if (calNext) calNext.addEventListener('click', () => {
 
 function setupStayPanel(){
   const calendarCard = document.getElementById('calendarCard');
-  const datesFallback = document.getElementById('datesFallback');
-  if (hasIcal){
-    calendarCard.hidden = false;
-    datesFallback.hidden = true;
-    renderCalendar();
-  } else {
-    calendarCard.hidden = true;
-    datesFallback.hidden = false;
-  }
+  if (calendarCard) calendarCard.hidden = false;
+  renderCalendar();
 }
 
 /* ============ CONTACT FORM ============ */
@@ -696,12 +767,32 @@ async function refreshQuoteFromForm(){
   }
 }
 
+function syncCalendarFromForm(){
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  const cin = form.checkin.value || null;
+  const cout = form.checkout.value || null;
+  calCheckin = cin;
+  calCheckout = (cin && cout && cout > cin) ? cout : null;
+  if (cin){
+    const d = new Date(`${cin}T12:00:00`);
+    calCursor = new Date(d.getFullYear(), d.getMonth(), 1);
+  }
+  renderCalendar();
+}
+
 function bindQuoteInputs(){
   const form = document.getElementById('contactForm');
   if (!form) return;
   ['checkin', 'checkout'].forEach((name) => {
-    form[name].addEventListener('change', refreshQuoteFromForm);
-    form[name].addEventListener('input', refreshQuoteFromForm);
+    form[name].addEventListener('change', () => {
+      syncCalendarFromForm();
+      refreshQuoteFromForm();
+    });
+    form[name].addEventListener('input', () => {
+      syncCalendarFromForm();
+      refreshQuoteFromForm();
+    });
   });
 }
 

@@ -399,7 +399,7 @@
   </div>
 
   <div class="stay-panel">
-    <div class="calendar-card" id="calendarCard" hidden>
+    <div class="calendar-card" id="calendarCard">
       <div class="calendar-head">
         <button type="button" id="calPrev" aria-label="Mois précédent">‹</button>
         <h3 id="calMonthLabel" class="mono"></h3>
@@ -409,13 +409,8 @@
         <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
       </div>
       <div class="calendar-grid" id="calendarGrid"></div>
+      <p class="calendar-legend mono" data-i18n="stay.calLegend">Cliquez une arrivée, puis un départ. Les prix viennent de votre grille Excel (− remise directe).</p>
       <p class="calendar-note" id="calSync"></p>
-    </div>
-
-    <div class="calendar-card dates-fallback" id="datesFallback">
-      <p class="eyebrow" data-i18n="stay.datesEyebrow">Vos dates</p>
-      <p class="dates-fallback-text" data-i18n="stay.datesHint">Indiquez vos dates, nous vous répondons sous 24 h.</p>
-      <a href="#reserver" class="btn btn-brass" data-i18n="stay.datesCta">Envoyer une demande</a>
     </div>
 
     <div class="price-card">
