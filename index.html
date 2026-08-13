@@ -395,7 +395,35 @@
   <div class="section-head">
     <p class="eyebrow" data-i18n="stay.eyebrow">Réservation directe</p>
     <h2 data-i18n="stay.title">Séjour &amp; tarifs</h2>
-    <p class="stay-sub" data-i18n="stay.sub">En réservant directement, vous évitez les frais de plateforme — le même chalet, un contact direct avec vos hôtes.</p>
+    <p class="stay-sub" data-i18n="stay.sub">Le chalet se loue entier ou par logement. En direct, vous évitez les frais de plateforme — un contact clair avec vos hôtes.</p>
+  </div>
+
+  <div class="lodging-pick" id="lodgingPick">
+    <p class="lodging-label" data-i18n="stay.lodgingLabel">Quelle formule ?</p>
+    <p class="lodging-combos mono" data-i18n="stay.lodgingCombos">Combinaisons possibles sur les mêmes dates : tout le chalet · 4 ch + 1 ch · 3 ch + 2 ch · 1 chambre seule</p>
+    <div class="lodging-options" role="radiogroup" aria-labelledby="lodgingPickLabel">
+      <span id="lodgingPickLabel" class="visually-hidden" data-i18n="stay.lodgingLabel">Quelle formule ?</span>
+      <button type="button" class="lodging-option is-active" role="radio" aria-checked="true" data-lodging="whole">
+        <span class="lodging-name" data-i18n="lodging.whole.name">Tout le chalet</span>
+        <span class="lodging-meta mono" data-i18n="lodging.whole.meta">5 chambres · jusqu'à 15 pers.</span>
+      </button>
+      <button type="button" class="lodging-option" role="radio" aria-checked="false" data-lodging="four">
+        <span class="lodging-name" data-i18n="lodging.four.name">4 chambres</span>
+        <span class="lodging-meta mono" data-i18n="lodging.four.meta">Logement · jusqu'à 12 pers.</span>
+      </button>
+      <button type="button" class="lodging-option" role="radio" aria-checked="false" data-lodging="three">
+        <span class="lodging-name" data-i18n="lodging.three.name">3 chambres</span>
+        <span class="lodging-meta mono" data-i18n="lodging.three.meta">Logement · jusqu'à 9 pers.</span>
+      </button>
+      <button type="button" class="lodging-option" role="radio" aria-checked="false" data-lodging="two">
+        <span class="lodging-name" data-i18n="lodging.two.name">2 chambres</span>
+        <span class="lodging-meta mono" data-i18n="lodging.two.meta">Logement · jusqu'à 6 pers.</span>
+      </button>
+      <button type="button" class="lodging-option" role="radio" aria-checked="false" data-lodging="one">
+        <span class="lodging-name" data-i18n="lodging.one.name">1 chambre</span>
+        <span class="lodging-meta mono" data-i18n="lodging.one.meta">Logement · jusqu'à 3 pers.</span>
+      </button>
+    </div>
   </div>
 
   <div class="stay-panel">
@@ -409,7 +437,7 @@
         <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
       </div>
       <div class="calendar-grid" id="calendarGrid"></div>
-      <p class="calendar-legend mono" data-i18n="stay.calLegend">Cliquez une arrivée, puis un départ. Les prix viennent de votre grille Excel (− remise directe).</p>
+      <p class="calendar-legend mono" data-i18n="stay.calLegend">Cliquez une arrivée, puis un départ. Les prix du calendrier correspondent pour l’instant au chalet entier (− remise directe).</p>
       <p class="calendar-note" id="calSync"></p>
     </div>
 
@@ -420,7 +448,7 @@
       <p class="price-compare" id="priceCompare" hidden></p>
       <p class="price-hint" id="priceHint" data-i18n="stay.priceHint">Choisissez vos dates dans le formulaire pour voir le tarif (Airbnb − remise directe).</p>
       <p class="price-synced mono" id="priceSynced" hidden></p>
-      <p class="price-detail" data-i18n="stay.priceDetail">Chalet entier · jusqu'à 15 personnes · linge inclus</p>
+      <p class="price-detail" id="priceDetail">Chalet entier · jusqu'à 15 personnes · linge inclus</p>
       <ol class="pay-steps">
         <li data-i18n="stay.step1">Vous envoyez votre demande</li>
         <li data-i18n="stay.step2">Nous confirmons les dates et vous envoyons un lien de paiement sécurisé</li>
@@ -441,7 +469,7 @@
     <div class="contact-text">
       <p class="eyebrow eyebrow--onDark" data-i18n="contact.eyebrow">Parlons de votre séjour</p>
       <h2 class="onDark" data-i18n="contact.title">Réserver le chalet</h2>
-      <p class="onDark contact-p" data-i18n="contact.p">Indiquez vos dates et le nombre de voyageurs — Sarah &amp; Anthony vous répondent en général le jour même.</p>
+      <p class="onDark contact-p" data-i18n="contact.p">Indiquez la formule, vos dates et le nombre de voyageurs — Sarah &amp; Anthony vous répondent en général le jour même.</p>
       <div class="contact-direct" id="contactPhoneWrap" hidden>
         <a href="#" class="contact-link" id="contactPhoneLink">
           <span class="contact-link-label" data-i18n="contact.whatsapp">WhatsApp / Téléphone</span>
@@ -466,6 +494,16 @@
           <input type="email" name="email" required autocomplete="email">
         </label>
       </div>
+      <label>
+        <span data-i18n="form.lodging">Formule</span>
+        <select name="lodging" id="formLodging" required>
+          <option value="whole" data-i18n="lodging.whole.name" selected>Tout le chalet</option>
+          <option value="four" data-i18n="lodging.four.name">4 chambres</option>
+          <option value="three" data-i18n="lodging.three.name">3 chambres</option>
+          <option value="two" data-i18n="lodging.two.name">2 chambres</option>
+          <option value="one" data-i18n="lodging.one.name">1 chambre</option>
+        </select>
+      </label>
       <div class="form-row">
         <label>
           <span data-i18n="form.checkin">Arrivée</span>
@@ -478,7 +516,7 @@
       </div>
       <label>
         <span data-i18n="form.guests">Nombre de voyageurs</span>
-        <input type="number" name="guests" min="1" max="15" value="2" required>
+        <input type="number" name="guests" id="formGuests" min="1" max="15" value="2" required>
       </label>
       <label>
         <span data-i18n="form.message">Message (facultatif)</span>

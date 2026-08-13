@@ -1,6 +1,20 @@
 const CONFIG = window.CHALET_CONFIG || {};
 const CAPACITY = 15;
 
+const LODGINGS = {
+  whole: { rooms: 5, capacity: 15 },
+  four:  { rooms: 4, capacity: 12 },
+  three: { rooms: 3, capacity: 9 },
+  two:   { rooms: 2, capacity: 6 },
+  one:   { rooms: 1, capacity: 3 }
+};
+
+let selectedLodging = 'whole';
+
+function lodgingCapacity(id){
+  return (LODGINGS[id] && LODGINGS[id].capacity) || CAPACITY;
+}
+
 /* ============ NAV SCROLL + BURGER ============ */
 const siteNav = document.getElementById('siteNav');
 window.addEventListener('scroll', () => {
@@ -116,13 +130,30 @@ const I18N = {
     "act.w6.meta":"Au chalet", "act.w6.title":"Sauna après les pistes",
     "act.w6.p":"Sauna privatif et coin du feu au retour.",
     "stay.eyebrow":"Réservation directe", "stay.title":"Séjour & tarifs",
-    "stay.sub":"En réservant directement, vous évitez les frais de plateforme — le même chalet, un contact direct avec vos hôtes.",
+    "stay.sub":"Le chalet se loue entier ou par logement. En direct, vous évitez les frais de plateforme — un contact clair avec vos hôtes.",
+    "stay.lodgingLabel":"Quelle formule ?",
+    "stay.lodgingCombos":"Combinaisons possibles sur les mêmes dates : tout le chalet · 4 ch + 1 ch · 3 ch + 2 ch · 1 chambre seule",
+    "lodging.whole.name":"Tout le chalet",
+    "lodging.whole.meta":"5 chambres · jusqu'à 15 pers.",
+    "lodging.whole.detail":"Tout le chalet · 5 chambres · jusqu'à 15 personnes · linge inclus",
+    "lodging.four.name":"4 chambres",
+    "lodging.four.meta":"Logement · jusqu'à 12 pers.",
+    "lodging.four.detail":"Logement 4 chambres · jusqu'à 12 personnes · linge inclus",
+    "lodging.three.name":"3 chambres",
+    "lodging.three.meta":"Logement · jusqu'à 9 pers.",
+    "lodging.three.detail":"Logement 3 chambres · jusqu'à 9 personnes · linge inclus",
+    "lodging.two.name":"2 chambres",
+    "lodging.two.meta":"Logement · jusqu'à 6 pers.",
+    "lodging.two.detail":"Logement 2 chambres · jusqu'à 6 personnes · linge inclus",
+    "lodging.one.name":"1 chambre",
+    "lodging.one.meta":"Logement · jusqu'à 3 pers.",
+    "lodging.one.detail":"Logement 1 chambre · jusqu'à 3 personnes · linge inclus",
     "stay.datesEyebrow":"Vos dates",
     "stay.datesHint":"Indiquez vos dates, nous vous répondons sous 24 h.",
     "stay.datesCta":"Envoyer une demande",
     "stay.calSync":"Dernière synchronisation : {date}",
     "stay.calNoIcal":"Calendrier interactif — les nuits réservées apparaîtront après branchement iCal.",
-    "stay.calLegend":"Cliquez une arrivée, puis un départ. Les prix viennent de votre grille Excel (− remise directe).",
+    "stay.calLegend":"Cliquez une arrivée, puis un départ. Les prix du calendrier correspondent pour l’instant au chalet entier (− remise directe).",
     "stay.priceEyebrow":"Tarif selon vos dates", "stay.priceUnit":"/ nuit",
     "stay.priceDetail":"Chalet entier · jusqu'à 15 personnes · linge inclus",
     "stay.priceHint":"Choisissez vos dates sur le calendrier (ou dans le formulaire) pour voir le tarif.",
@@ -138,9 +169,10 @@ const I18N = {
     "stay.li1":"Arrivée dès 16h00 · départ avant 12h00",
     "stay.li2":"Acompte de 30 % après confirmation des dates",
     "contact.eyebrow":"Parlons de votre séjour", "contact.title":"Réserver le chalet",
-    "contact.p":"Indiquez vos dates et le nombre de voyageurs — Sarah & Anthony vous répondent en général le jour même.",
+    "contact.p":"Indiquez la formule, vos dates et le nombre de voyageurs — Sarah & Anthony vous répondent en général le jour même.",
     "contact.whatsapp":"WhatsApp / Téléphone",
     "form.name":"Nom", "form.email":"Email", "form.checkin":"Arrivée", "form.checkout":"Départ",
+    "form.lodging":"Formule",
     "form.guests":"Nombre de voyageurs", "form.message":"Message (facultatif)", "form.submit":"Envoyer la demande",
     "form.sending":"Envoi en cours…",
     "form.success":"Demande envoyée. Nous vous répondons sous 24 h.",
@@ -148,7 +180,8 @@ const I18N = {
     "form.errorEmail":"L'envoi a échoué. Réessayez ou écrivez-nous directement à {email}.",
     "form.errDates":"La date de départ doit être après la date d'arrivée.",
     "form.errEmail":"Indiquez une adresse e-mail valide.",
-    "form.errGuests":"Le nombre de voyageurs doit être entre 1 et 15.",
+    "form.errGuests":"Le nombre de voyageurs doit être entre 1 et {max}.",
+    "form.errLodging":"Choisissez une formule de logement.",
     "form.note":"Vos données servent uniquement à traiter la demande. Voir les <a href=\"mentions-legales/\">mentions légales</a>.",
     "loc.eyebrow":"Trient, Valais", "loc.title":"Entre deux mondes",
     "loc.p":"Trient se trouve à la frontière franco-suisse, à vingt minutes de Chamonix et de Martigny. Le village est une étape du Tour du Mont-Blanc et le point de départ de nombreuses randonnées vers le glacier du Trient et le barrage d'Émosson. L'adresse exacte du chalet vous est communiquée après confirmation de la réservation.",
@@ -209,13 +242,30 @@ const I18N = {
     "act.w6.meta":"At the chalet", "act.w6.title":"Sauna after the slopes",
     "act.w6.p":"Private sauna and fireside when you get back.",
     "stay.eyebrow":"Direct booking", "stay.title":"Stay & rates",
-    "stay.sub":"Book directly and skip platform fees — the same chalet, direct contact with your hosts.",
+    "stay.sub":"Rent the whole chalet or a separate unit. Book directly and skip platform fees — clear contact with your hosts.",
+    "stay.lodgingLabel":"Which option?",
+    "stay.lodgingCombos":"Possible on the same dates: whole chalet · 4 bed + 1 bed · 3 bed + 2 bed · 1 bedroom alone",
+    "lodging.whole.name":"Whole chalet",
+    "lodging.whole.meta":"5 bedrooms · up to 15 guests",
+    "lodging.whole.detail":"Whole chalet · 5 bedrooms · up to 15 guests · linens included",
+    "lodging.four.name":"4 bedrooms",
+    "lodging.four.meta":"Unit · up to 12 guests",
+    "lodging.four.detail":"4-bedroom unit · up to 12 guests · linens included",
+    "lodging.three.name":"3 bedrooms",
+    "lodging.three.meta":"Unit · up to 9 guests",
+    "lodging.three.detail":"3-bedroom unit · up to 9 guests · linens included",
+    "lodging.two.name":"2 bedrooms",
+    "lodging.two.meta":"Unit · up to 6 guests",
+    "lodging.two.detail":"2-bedroom unit · up to 6 guests · linens included",
+    "lodging.one.name":"1 bedroom",
+    "lodging.one.meta":"Unit · up to 3 guests",
+    "lodging.one.detail":"1-bedroom unit · up to 3 guests · linens included",
     "stay.datesEyebrow":"Your dates",
     "stay.datesHint":"Tell us your dates — we reply within 24 hours.",
     "stay.datesCta":"Send a request",
     "stay.calSync":"Last synced: {date}",
     "stay.calNoIcal":"Interactive calendar — booked nights will appear once iCal is connected.",
-    "stay.calLegend":"Click a check-in, then a check-out. Prices come from your Excel grid (− direct discount).",
+    "stay.calLegend":"Click a check-in, then a check-out. Calendar prices currently reflect the whole chalet (− direct discount).",
     "stay.priceEyebrow":"Rate for your dates", "stay.priceUnit":"/ night",
     "stay.priceDetail":"Whole chalet · up to 15 guests · linens included",
     "stay.priceHint":"Pick your dates on the calendar (or in the form) to see the rate.",
@@ -231,9 +281,10 @@ const I18N = {
     "stay.li1":"Check-in from 4:00 PM · check-out before 12:00 PM",
     "stay.li2":"30% deposit after dates are confirmed",
     "contact.eyebrow":"Let's talk about your stay", "contact.title":"Book the chalet",
-    "contact.p":"Tell us your dates and number of guests — Sarah & Anthony usually reply the same day.",
+    "contact.p":"Tell us the unit, your dates and number of guests — Sarah & Anthony usually reply the same day.",
     "contact.whatsapp":"WhatsApp / Phone",
     "form.name":"Name", "form.email":"Email", "form.checkin":"Check-in", "form.checkout":"Check-out",
+    "form.lodging":"Option",
     "form.guests":"Number of guests", "form.message":"Message (optional)", "form.submit":"Send request",
     "form.sending":"Sending…",
     "form.success":"Request sent. We will reply within 24 hours.",
@@ -241,7 +292,8 @@ const I18N = {
     "form.errorEmail":"Sending failed. Try again, or write to us directly at {email}.",
     "form.errDates":"Check-out must be after check-in.",
     "form.errEmail":"Enter a valid email address.",
-    "form.errGuests":"Number of guests must be between 1 and 15.",
+    "form.errGuests":"Number of guests must be between 1 and {max}.",
+    "form.errLodging":"Please choose a lodging option.",
     "form.note":"Your details are used only to handle the request. See the <a href=\"mentions-legales/\">legal notice</a>.",
     "loc.eyebrow":"Trient, Valais", "loc.title":"Between two worlds",
     "loc.p":"Trient sits right on the French-Swiss border, twenty minutes from Chamonix and Martigny. The village is a stage on the Tour du Mont-Blanc and a starting point for hikes to the Trient glacier and the Émosson dam. The exact address is shared once your booking is confirmed.",
@@ -302,13 +354,30 @@ const I18N = {
     "act.w6.meta":"Im Chalet", "act.w6.title":"Sauna nach der Piste",
     "act.w6.p":"Private Sauna und Feuerplatz bei der Rückkehr.",
     "stay.eyebrow":"Direktbuchung", "stay.title":"Aufenthalt & Preise",
-    "stay.sub":"Buchen Sie direkt und sparen Sie Plattformgebühren — dasselbe Chalet, direkter Kontakt zu Ihren Gastgebern.",
+    "stay.sub":"Mieten Sie das ganze Chalet oder eine Einheit. Direkt buchen, Plattformgebühren sparen — klarer Kontakt zu Ihren Gastgebern.",
+    "stay.lodgingLabel":"Welche Formel?",
+    "stay.lodgingCombos":"Möglich an denselben Daten: ganzes Chalet · 4 Zi + 1 Zi · 3 Zi + 2 Zi · 1 Zimmer allein",
+    "lodging.whole.name":"Ganzes Chalet",
+    "lodging.whole.meta":"5 Zimmer · bis 15 Pers.",
+    "lodging.whole.detail":"Ganzes Chalet · 5 Zimmer · bis 15 Personen · Bettwäsche inkl.",
+    "lodging.four.name":"4 Zimmer",
+    "lodging.four.meta":"Einheit · bis 12 Pers.",
+    "lodging.four.detail":"4-Zimmer-Einheit · bis 12 Personen · Bettwäsche inkl.",
+    "lodging.three.name":"3 Zimmer",
+    "lodging.three.meta":"Einheit · bis 9 Pers.",
+    "lodging.three.detail":"3-Zimmer-Einheit · bis 9 Personen · Bettwäsche inkl.",
+    "lodging.two.name":"2 Zimmer",
+    "lodging.two.meta":"Einheit · bis 6 Pers.",
+    "lodging.two.detail":"2-Zimmer-Einheit · bis 6 Personen · Bettwäsche inkl.",
+    "lodging.one.name":"1 Zimmer",
+    "lodging.one.meta":"Einheit · bis 3 Pers.",
+    "lodging.one.detail":"1-Zimmer-Einheit · bis 3 Personen · Bettwäsche inkl.",
     "stay.datesEyebrow":"Ihre Daten",
     "stay.datesHint":"Nennen Sie uns Ihre Daten — wir antworten innert 24 Stunden.",
     "stay.datesCta":"Anfrage senden",
     "stay.calSync":"Letzte Synchronisation: {date}",
     "stay.calNoIcal":"Interaktiver Kalender — gebuchte Nächte erscheinen nach iCal-Anbindung.",
-    "stay.calLegend":"Klicken Sie Anreise, dann Abreise. Preise aus Ihrer Excel-Tabelle (− Direktrabatt).",
+    "stay.calLegend":"Klicken Sie Anreise, dann Abreise. Kalenderpreise gelten vorerst für das ganze Chalet (− Direktrabatt).",
     "stay.priceEyebrow":"Preis für Ihre Daten", "stay.priceUnit":"/ Nacht",
     "stay.priceDetail":"Ganzes Chalet · bis zu 15 Gäste · Bettwäsche inklusive",
     "stay.priceHint":"Wählen Sie Ihre Daten im Kalender (oder im Formular), um den Preis zu sehen.",
@@ -324,9 +393,10 @@ const I18N = {
     "stay.li1":"Anreise ab 16:00 Uhr · Abreise vor 12:00 Uhr",
     "stay.li2":"30 % Anzahlung nach Bestätigung der Daten",
     "contact.eyebrow":"Erzählen Sie uns von Ihrem Aufenthalt", "contact.title":"Chalet buchen",
-    "contact.p":"Nennen Sie uns Ihre Daten und die Gästezahl — Sarah & Anthony antworten meist noch am selben Tag.",
+    "contact.p":"Nennen Sie Formel, Daten und Gästezahl — Sarah & Anthony antworten meist noch am selben Tag.",
     "contact.whatsapp":"WhatsApp / Telefon",
     "form.name":"Name", "form.email":"E-Mail", "form.checkin":"Anreise", "form.checkout":"Abreise",
+    "form.lodging":"Formel",
     "form.guests":"Anzahl Gäste", "form.message":"Nachricht (optional)", "form.submit":"Anfrage senden",
     "form.sending":"Wird gesendet…",
     "form.success":"Anfrage gesendet. Wir antworten innert 24 Stunden.",
@@ -334,7 +404,8 @@ const I18N = {
     "form.errorEmail":"Senden fehlgeschlagen. Versuchen Sie es erneut oder schreiben Sie uns direkt an {email}.",
     "form.errDates":"Das Abreisedatum muss nach dem Anreisedatum liegen.",
     "form.errEmail":"Geben Sie eine gültige E-Mail-Adresse ein.",
-    "form.errGuests":"Die Gästezahl muss zwischen 1 und 15 liegen.",
+    "form.errGuests":"Die Gästezahl muss zwischen 1 und {max} liegen.",
+    "form.errLodging":"Bitte wählen Sie eine Wohnformel.",
     "form.note":"Ihre Angaben dienen nur der Bearbeitung der Anfrage. Siehe <a href=\"mentions-legales/\">rechtliche Hinweise</a>.",
     "loc.eyebrow":"Trient, Wallis", "loc.title":"Zwischen zwei Welten",
     "loc.p":"Trient liegt direkt an der französisch-schweizerischen Grenze, zwanzig Minuten von Chamonix und Martigny entfernt. Das Dorf ist eine Etappe des Tour du Mont-Blanc und Ausgangspunkt für Wanderungen zum Trientgletscher und zum Staudamm von Émosson. Die genaue Adresse erhalten Sie nach Bestätigung der Buchung.",
@@ -373,6 +444,7 @@ function applyLang(lang){
   localStorage.setItem('chaletLang', lang);
   setLangMenu(false);
   renderCalendar();
+  applyLodging(selectedLodging, { silent: true });
   setupPricing();
 }
 
@@ -522,6 +594,56 @@ function setupStayPanel(){
   const calendarCard = document.getElementById('calendarCard');
   if (calendarCard) calendarCard.hidden = false;
   renderCalendar();
+  setupLodgingPicker();
+  applyLodging(selectedLodging, { silent: true });
+}
+
+/* ============ LODGING FORMULAS ============ */
+function lodgingLabel(id){
+  return t(`lodging.${id}.name`) || id;
+}
+
+function updateLodgingDetail(){
+  const detail = document.getElementById('priceDetail');
+  if (detail) detail.textContent = t(`lodging.${selectedLodging}.detail`);
+}
+
+function applyLodging(id, opts = {}){
+  if (!LODGINGS[id]) id = 'whole';
+  selectedLodging = id;
+  const max = lodgingCapacity(id);
+
+  document.querySelectorAll('.lodging-option').forEach((btn) => {
+    const active = btn.getAttribute('data-lodging') === id;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-checked', active ? 'true' : 'false');
+  });
+
+  const formSelect = document.getElementById('formLodging');
+  if (formSelect && formSelect.value !== id) formSelect.value = id;
+
+  const guestsInput = document.getElementById('formGuests') || document.querySelector('#contactForm [name="guests"]');
+  if (guestsInput){
+    guestsInput.max = String(max);
+    const current = Number(guestsInput.value);
+    if (Number.isFinite(current) && current > max) guestsInput.value = String(max);
+  }
+
+  updateLodgingDetail();
+  if (!opts.silent){
+    setupPricing();
+    refreshQuoteFromForm();
+  }
+}
+
+function setupLodgingPicker(){
+  document.querySelectorAll('.lodging-option').forEach((btn) => {
+    btn.addEventListener('click', () => applyLodging(btn.getAttribute('data-lodging')));
+  });
+  const formSelect = document.getElementById('formLodging');
+  if (formSelect){
+    formSelect.addEventListener('change', () => applyLodging(formSelect.value));
+  }
 }
 
 /* ============ CONTACT FORM ============ */
@@ -552,12 +674,19 @@ contactForm.addEventListener('submit', async (e) => {
   const checkin = f.checkin.value;
   const checkout = f.checkout.value;
   const guests = Number(f.guests.value);
+  const lodging = (f.lodging && f.lodging.value) || selectedLodging;
   const message = f.message.value.trim();
   const honeypot = f.website.value.trim();
+  const maxGuests = lodgingCapacity(lodging);
 
   if (!validEmail(email)){
     setFormStatus('error', t('form.errEmail'));
     f.email.focus();
+    return;
+  }
+  if (!LODGINGS[lodging]){
+    setFormStatus('error', t('form.errLodging'));
+    if (f.lodging) f.lodging.focus();
     return;
   }
   if (!checkin || !checkout || checkout <= checkin){
@@ -565,8 +694,8 @@ contactForm.addEventListener('submit', async (e) => {
     f.checkout.focus();
     return;
   }
-  if (!Number.isInteger(guests) || guests < 1 || guests > CAPACITY){
-    setFormStatus('error', t('form.errGuests'));
+  if (!Number.isInteger(guests) || guests < 1 || guests > maxGuests){
+    setFormStatus('error', t('form.errGuests', { max: maxGuests }));
     f.guests.focus();
     return;
   }
@@ -589,11 +718,13 @@ contactForm.addEventListener('submit', async (e) => {
   const payload = {
     name,
     email,
+    lodging,
+    lodging_label: lodgingLabel(lodging),
     checkin,
     checkout,
     guests,
     message,
-    subject: `Demande de réservation — Chalet La Berte`,
+    subject: `Demande — ${lodgingLabel(lodging)} — Chalet La Berte`,
     from_name: name
   };
   if (CONFIG.formAccessKey) payload.access_key = CONFIG.formAccessKey;
