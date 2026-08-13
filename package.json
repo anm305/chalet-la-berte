@@ -1,0 +1,7 @@
+{
+  "name": "chalet-la-berte",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  }
+}

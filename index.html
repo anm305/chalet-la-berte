@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr" data-season="summer">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chalet La Berte — Refuge alpin à Trient, Valais, Suisse</title>
+<meta name="description" content="Chalet La Berte, Trient, Valais. Réservation directe. 5 chambres, sauna, cheminée, vue sur les Alpes.">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="styles.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LodgingBusiness",
+  "name": "Chalet La Berte",
+  "description": "Chalet à Trient, Valais. Réservation directe. 5 chambres, sauna, cheminée, vue sur les Alpes.",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Trient",
+    "addressRegion": "Valais",
+    "addressCountry": "CH"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 46.056,
+    "longitude": 6.996
+  },
+  "numberOfRooms": 5,
+  "petsAllowed": false,
+  "availableLanguage": ["fr", "en", "de"],
+  "amenityFeature": [
+    { "@type": "LocationFeatureSpecification", "name": "Cuisine équipée", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Wifi", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Poêle", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Sauna", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Parking", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Arrivée autonome", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Vue sur les Alpes", "value": true }
+  ]
+}
+</script>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header class="site-nav" id="siteNav">
+  <div class="nav-inner">
+    <a href="#top" class="nav-brand">Chalet <em>La Berte</em></a>
+    <div class="nav-panel" id="navPanel">
+      <nav class="nav-links" id="navLinks">
+        <a href="#histoire" data-i18n="nav.story">Le chalet</a>
+        <a href="#activites" data-i18n="nav.activities">Activités</a>
+        <a href="#sejour" data-i18n="nav.stay">Séjour &amp; tarifs</a>
+        <a href="#reserver" class="nav-cta" data-i18n="nav.book">Réserver</a>
+      </nav>
+      <div class="nav-controls">
+        <div class="season-nav" id="seasonNav" role="group" aria-label="Saison">
+          <button type="button" data-season-nav="summer" data-i18n="season.summer">Été</button>
+          <button type="button" data-season-nav="winter" data-i18n="season.winter">Hiver</button>
+        </div>
+        <div class="lang-dropdown" id="langSwitch">
+          <button type="button" class="lang-toggle" id="langToggle" aria-expanded="false" aria-haspopup="listbox" aria-controls="langMenu">
+            <span id="langCurrent">FR</span>
+            <span class="lang-caret" aria-hidden="true">▾</span>
+          </button>
+          <ul class="lang-menu" id="langMenu" role="listbox" hidden>
+            <li role="none"><button type="button" role="option" data-lang-btn="fr" aria-selected="true">FR</button></li>
+            <li role="none"><button type="button" role="option" data-lang-btn="en" aria-selected="false">EN</button></li>
+            <li role="none"><button type="button" role="option" data-lang-btn="de" aria-selected="false">DE</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navPanel">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="hero-media">
+    <img
+      src="images/summer/hero.jpg"
+      data-season-src-summer="images/summer/hero.jpg"
+      data-season-src-winter="images/winter/hero.jpg"
+      alt="Façade du chalet La Berte à Trient, Valais"
+      loading="eager">
+    <div class="hero-scrim"></div>
+  </div>
+  <div class="hero-content">
+    <p class="hero-eyebrow" data-i18n="hero.eyebrow">1300 M · VALLÉE DU TRIENT · VALAIS</p>
+    <h1 class="hero-title">Chalet<br><em>La&nbsp;Berte</em></h1>
+    <p class="hero-sub" data-i18n="hero.sub">Un refuge de bois et de silence, entre sentiers du Tour du Mont-Blanc et sommets valaisans.</p>
+    <div class="hero-actions">
+      <a href="#reserver" class="btn btn-brass" data-i18n="hero.cta1">Vérifier les disponibilités</a>
+      <a href="#histoire" class="btn btn-ghost" data-i18n="hero.cta2">Découvrir le chalet</a>
+    </div>
+  </div>
+  <div class="hero-scroll" aria-hidden="true"><span></span></div>
+</section>
+
+<!-- ============= RIDGE DIVIDER ============= -->
+<div class="ridge ridge--light" data-elevation="1300 M">
+  <svg viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0,70 L60,55 L140,68 L210,30 L280,50 L360,20 L430,45 L520,10 L600,40 L680,25 L760,55 L850,15 L930,48 L1020,32 L1110,58 L1200,22 L1290,44 L1370,60 L1440,38 L1440,90 L0,90 Z"/></svg>
+</div>
+
+<!-- ================= STAT STRIP ================= -->
+<section class="stats">
+  <div class="stat"><span class="stat-num">15</span><span class="stat-label" data-i18n="stats.guests">voyageurs</span></div>
+  <div class="stat"><span class="stat-num">05</span><span class="stat-label" data-i18n="stats.rooms">chambres</span></div>
+  <div class="stat"><span class="stat-num">09</span><span class="stat-label" data-i18n="stats.beds">lits</span></div>
+  <div class="stat"><span class="stat-num">4.5</span><span class="stat-label" data-i18n="stats.baths">salles de bain</span></div>
+  <div class="stat"><span class="stat-num">1</span><span class="stat-label" data-i18n="stats.sauna">sauna</span></div>
+</section>
+
+<!-- ================= HISTOIRE ================= -->
+<section class="story" id="histoire">
+  <div class="story-text">
+    <p class="eyebrow" data-i18n="story.eyebrow">Le chalet</p>
+    <h2 data-i18n="story.title">Une bâtisse de mélèze<br>face aux Alpes</h2>
+    <p data-i18n="story.p1">Niché dans le hameau discret de Trient, à l'écart du tumulte, le chalet La Berte se dévoile après le dernier virage de la route — grand, lumineux, construit dans les bois clairs de la vallée. L'été, les randonneurs du Tour du Mont-Blanc y posent leur sac. L'hiver, la neige referme le village et le poêle prend le relais.</p>
+    <p data-i18n="story.p2">Sarah et Anthony, qui accueillent ici depuis cinq ans, ont pensé chaque pièce pour les groupes : grande table commune, sauna après les pistes, coin du feu pour refaire le monde, et cette vue sur les sommets qu'on ne se lasse pas de regarder par la fenêtre de la cuisine.</p>
+    <div class="story-badges">
+      <span data-i18n="story.badge1">Arrivée autonome</span>
+      <span data-i18n="story.badge2">Parking gratuit</span>
+      <span data-i18n="story.badge3">Hôtes 5 ans d'expérience</span>
+    </div>
+    <nav class="story-jump" aria-label="Dans le chalet">
+      <a href="#chambres" data-i18n="nav.rooms">Chambres</a>
+      <a href="#galerie" data-i18n="nav.gallery">Galerie</a>
+      <a href="#equipements" data-i18n="nav.amenities">Équipements</a>
+    </nav>
+  </div>
+  <div class="story-media">
+    <img
+      src="images/summer/story.jpg"
+      data-season-src-summer="images/summer/story.jpg"
+      data-season-src-winter="images/winter/story.jpg"
+      alt="Intérieur en madriers du chalet La Berte"
+      loading="lazy">
+  </div>
+</section>
+
+<div class="ridge ridge--dark" data-elevation="2210 M · COL DE BALME">
+  <svg viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0,50 L80,35 L150,58 L230,20 L300,42 L390,12 L460,38 L540,8 L630,35 L710,18 L790,48 L880,14 L960,42 L1040,28 L1130,52 L1220,18 L1300,40 L1380,55 L1440,32 L1440,90 L0,90 Z"/></svg>
+</div>
+
+<!-- ================= CHAMBRES ================= -->
+<section class="rooms" id="chambres">
+  <div class="section-head">
+    <p class="eyebrow eyebrow--onDark" data-i18n="rooms.eyebrow">Où vous dormirez</p>
+    <h2 class="onDark" data-i18n="rooms.title">Cinq chambres, un seul toit</h2>
+  </div>
+  <div class="rooms-track" id="roomsTrack">
+
+    <article class="room-card">
+      <img src="images/chambre-1.jpg" alt="Chambre 1 — lit queen avec vue sur la neige" loading="lazy">
+      <div class="room-info">
+        <h3 data-i18n="room1.title">Chambre 1</h3>
+        <p class="mono" data-i18n="room1.beds">1 lit queen size · 1 lit simple</p>
+      </div>
+    </article>
+
+    <article class="room-card">
+      <img src="images/chambre-2.jpg" alt="Chambre 2 — lit double" loading="lazy">
+      <div class="room-info">
+        <h3 data-i18n="room2.title">Chambre 2</h3>
+        <p class="mono" data-i18n="room2.beds">1 lit double</p>
+      </div>
+    </article>
+
+    <article class="room-card">
+      <img src="images/chambre-3.jpg" alt="Chambre 3 — lit queen, mur en bois" loading="lazy">
+      <div class="room-info">
+        <h3 data-i18n="room3.title">Chambre 3</h3>
+        <p class="mono" data-i18n="room3.beds">1 lit queen size</p>
+      </div>
+    </article>
+
+    <article class="room-card">
+      <img src="images/chambre-4.jpg" alt="Chambre 4 — lits simples, superposé et couchage d'appoint" loading="lazy">
+      <div class="room-info">
+        <h3 data-i18n="room4.title">Chambre 4</h3>
+        <p class="mono" data-i18n="room4.beds">2 lits simples · 1 superposé · 1 couchage d'appoint</p>
+      </div>
+    </article>
+
+    <article class="room-card">
+      <img src="images/chambre-5.jpg" alt="Chambre 5 — lit queen avec vue montagne" loading="lazy">
+      <div class="room-info">
+        <h3 data-i18n="room5.title">Chambre 5</h3>
+        <p class="mono" data-i18n="room5.beds">1 lit queen size</p>
+      </div>
+    </article>
+
+  </div>
+  <p class="rooms-hint" data-i18n="rooms.hint">← faites glisser pour voir toutes les chambres →</p>
+</section>
+
+<!-- ================= ÉQUIPEMENTS ================= -->
+<section class="amenities" id="equipements">
+  <div class="section-head">
+    <p class="eyebrow" data-i18n="amenities.eyebrow">Tout est prévu</p>
+    <h2 data-i18n="amenities.title">Équipements</h2>
+  </div>
+  <div class="amenities-grid">
+    <div class="amenity"><svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 3v7a3 3 0 0 0 3 3v8M6 3v6M9 3v6M4 3v6M15 21V9a4 4 0 0 1 4-4v16"/></svg><span data-i18n="am.kitchen">Cuisine équipée</span></div>
+    <div class="amenity"><svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 8.5a16 16 0 0 1 20 0M5.5 12a11 11 0 0 1 13 0M9 15.5a6 6 0 0 1 6 0"/><circle cx="12" cy="19" r="0.9" fill="currentColor" stroke="none"/></svg><span data-i18n="am.wifi">Wifi haut débit</span></div>
+    <div class="amenity"><svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 3c1.8 2.6 2.6 4.6 2.6 6.3a2.6 2.6 0 1 1-5.2 0C9.4 7.6 10.2 5.6 12 3Z"/><path d="M6 21h12M7 21c0-4 2-5 2-8M17 21c0-4-2-5-2-8"/></svg><span data-i18n="am.fire">Poêle / coin du feu</span></div>
+    <div class="amenity"><svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 14h16M5 14v6h14v-6M8 14V6a2 2 0 0 1 4 0M12 6a2 2 0 0 1 4 0v8"/><path d="M9 20v1M15 20v1"/></svg><span data-i18n="am.sauna">Sauna privatif</span></div>
+    <div class="amenity"><svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 16v-3.5L6 8h12l2 4.5V16M4 16h16M4 16v2.5M20 16v2.5"/><circle cx="7.5" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="16.5" cy="16" r="1" fill="currentColor" stroke="none"/></svg><span data-i18n="am.parking">Parking gratuit</span></div>
+    <div class="amenity"><svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="5" width="18" height="12" rx="1"/><path d="M2 20h20M9 5V3h6v2"/></svg><span data-i18n="am.desk">Espace de travail</span></div>
+    <div class="amenity"><svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="15" r="3.2"/><path d="M10.3 12.7 18 5M18 5l2.5 2.5M15.5 7.5 18 10"/></svg><span data-i18n="am.selfcheckin">Arrivée autonome</span></div>
+    <div class="amenity"><svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 19 8 8l3.5 5.5L14 10l8 9Z"/><path d="M9.5 19 13 13.5"/></svg><span data-i18n="am.view">Vue sur les Alpes</span></div>
+  </div>
+</section>
+
+<!-- ================= GALERIE ================= -->
+<section class="gallery" id="galerie">
+  <div class="section-head gallery-head">
+    <p class="eyebrow" data-i18n="gallery.eyebrow">Le chalet en images</p>
+    <h2 data-i18n="gallery.title">Galerie</h2>
+  </div>
+  <div class="gallery-grid" id="galleryGrid">
+    <button type="button" class="gallery-item gallery-item--tall" data-gallery-src="images/summer/g1.jpg">
+      <img src="images/summer/g1.jpg" data-season-src-summer="images/summer/g1.jpg" data-season-src-winter="images/winter/g1.jpg" loading="lazy" alt="Intérieur en bois du chalet">
+    </button>
+    <button type="button" class="gallery-item" data-gallery-src="images/summer/g2.jpg">
+      <img src="images/summer/g2.jpg" data-season-src-summer="images/summer/g2.jpg" data-season-src-winter="images/winter/g2.jpg" loading="lazy" alt="Cuisine équipée avec vue">
+    </button>
+    <button type="button" class="gallery-item" data-gallery-src="images/summer/g3.jpg">
+      <img src="images/summer/g3.jpg" data-season-src-summer="images/summer/g3.jpg" data-season-src-winter="images/winter/g3.jpg" loading="lazy" alt="Grande table face aux montagnes">
+    </button>
+    <button type="button" class="gallery-item" data-gallery-src="images/summer/g4.jpg">
+      <img src="images/summer/g4.jpg" data-season-src-summer="images/summer/g4.jpg" data-season-src-winter="images/winter/g4.jpg" loading="lazy" alt="Sauna privatif">
+    </button>
+    <button type="button" class="gallery-item" data-gallery-src="images/summer/g5.jpg">
+      <img src="images/summer/g5.jpg" data-season-src-summer="images/summer/g5.jpg" data-season-src-winter="images/winter/g5.jpg" loading="lazy" alt="Salle de bain avec baignoire et sauna">
+    </button>
+    <button type="button" class="gallery-item" data-gallery-src="images/summer/g6.jpg">
+      <img src="images/summer/g6.jpg" data-season-src-summer="images/summer/g6.jpg" data-season-src-winter="images/winter/g6.jpg" loading="lazy" alt="Poêle en pierre du salon">
+    </button>
+    <button type="button" class="gallery-item gallery-item--wide" data-gallery-src="images/summer/g7.jpg">
+      <img src="images/summer/g7.jpg" data-season-src-summer="images/summer/g7.jpg" data-season-src-winter="images/winter/g7.jpg" loading="lazy" alt="Jardin et four à pizza extérieur">
+    </button>
+    <button type="button" class="gallery-item" data-gallery-src="images/summer/g8.jpg">
+      <img src="images/summer/g8.jpg" data-season-src-summer="images/summer/g8.jpg" data-season-src-winter="images/winter/g8.jpg" loading="lazy" alt="Espace extérieur du chalet">
+    </button>
+    <button type="button" class="gallery-item" data-gallery-src="images/summer/g9.jpg">
+      <img src="images/summer/g9.jpg" data-season-src-summer="images/summer/g9.jpg" data-season-src-winter="images/winter/g9.jpg" loading="lazy" alt="Véranda vitrée face aux montagnes">
+    </button>
+    <button type="button" class="gallery-item" data-gallery-src="images/summer/g10.jpg">
+      <img src="images/summer/g10.jpg" data-season-src-summer="images/summer/g10.jpg" data-season-src-winter="images/winter/g10.jpg" loading="lazy" alt="Chambre avec vue">
+    </button>
+    <button type="button" class="gallery-item" data-gallery-src="images/summer/g11.jpg">
+      <img src="images/summer/g11.jpg" data-season-src-summer="images/summer/g11.jpg" data-season-src-winter="images/winter/g11.jpg" loading="lazy" alt="Sommets autour de Trient">
+    </button>
+    <button type="button" class="gallery-item" data-gallery-src="images/summer/g12.jpg">
+      <img src="images/summer/g12.jpg" data-season-src-summer="images/summer/g12.jpg" data-season-src-winter="images/winter/g12.jpg" loading="lazy" alt="Salle de bain moderne">
+    </button>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Fermer">×</button>
+  <button type="button" class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Photo précédente">‹</button>
+  <img src="" alt="Vue agrandie" id="lightboxImg">
+  <button type="button" class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Photo suivante">›</button>
+</div>
+
+<div class="ridge ridge--light" data-elevation="1920 M · GLACIER DU TRIENT">
+  <svg viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0,60 L70,45 L160,62 L240,25 L310,48 L400,15 L470,40 L560,10 L640,38 L720,20 L800,50 L890,16 L970,45 L1050,30 L1140,55 L1230,20 L1310,42 L1390,58 L1440,35 L1440,90 L0,90 Z"/></svg>
+</div>
+
+<!-- ================= ACTIVITÉS ================= -->
+<section class="activities" id="activites">
+  <div class="section-head">
+    <p class="eyebrow" data-i18n="act.eyebrow">Autour du chalet</p>
+    <h2 data-i18n="act.title">Activités</h2>
+    <p class="activities-sub" data-i18n="act.sub">Trient est une étape du Tour du Mont-Blanc, à vingt minutes de Chamonix — randonnées, glacier, barrages l’été ; ski de randonnée, raquettes et domaines voisins l’hiver.</p>
+  </div>
+
+  <div class="season-switch" role="tablist" aria-label="Saison">
+    <button type="button" role="tab" id="tabSummer" class="season-btn active" aria-selected="true" aria-controls="panelSummer" data-season="summer" data-i18n="act.summer">Été</button>
+    <button type="button" role="tab" id="tabWinter" class="season-btn" aria-selected="false" aria-controls="panelWinter" data-season="winter" data-i18n="act.winter">Hiver</button>
+  </div>
+
+  <div class="season-panel active" id="panelSummer" role="tabpanel" aria-labelledby="tabSummer" data-season-panel="summer">
+    <div class="season-layout">
+      <div class="season-media">
+        <img src="images/summer/activities.jpg" alt="Vallée de Trient en été" loading="lazy">
+      </div>
+      <ul class="season-list">
+        <li>
+          <span class="season-meta mono" data-i18n="act.s1.meta">Grande randonnée</span>
+          <h3 data-i18n="act.s1.title">Tour du Mont-Blanc</h3>
+          <p data-i18n="act.s1.p">Étape depuis Trient vers le Col de Balme (~2h45). Accès direct aux sentiers GR balisés Suisse–France–Italie.</p>
+        </li>
+        <li>
+          <span class="season-meta mono" data-i18n="act.s2.meta">~1h30 à pied</span>
+          <h3 data-i18n="act.s2.title">Glacier du Trient</h3>
+          <p data-i18n="act.s2.p">Randonnée jusqu’au glacier, face aux Aiguilles Dorées.</p>
+        </li>
+        <li>
+          <span class="season-meta mono" data-i18n="act.s3.meta">~30 min en voiture</span>
+          <h3 data-i18n="act.s3.title">Barrage d’Émosson</h3>
+          <p data-i18n="act.s3.p">Lac d’altitude, panoramas Mont-Blanc, et traces de dinosaures au Vieux-Émosson.</p>
+        </li>
+        <li>
+          <span class="season-meta mono" data-i18n="act.s4.meta">Sur place</span>
+          <h3 data-i18n="act.s4.title">Bisse &amp; gorges</h3>
+          <p data-i18n="act.s4.p">Sentier du Bisse du Trient et Gorges Mystérieuses de Tête-Noire.</p>
+        </li>
+        <li>
+          <span class="season-meta mono" data-i18n="act.s5.meta">Vallée du Trient</span>
+          <h3 data-i18n="act.s5.title">Trail, VTT &amp; escalade</h3>
+          <p data-i18n="act.s5.p">53 km de chemins balisés, parcours trail, Tour de la Vallée à VTT, et sites d’escalade sur granit.</p>
+        </li>
+        <li>
+          <span class="season-meta mono" data-i18n="act.s6.meta">~20 min</span>
+          <h3 data-i18n="act.s6.title">Chamonix-Mont-Blanc</h3>
+          <p data-i18n="act.s6.p">Téléphériques, Aiguille du Midi, Mer de Glace — vingt minutes de route.</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="season-panel" id="panelWinter" role="tabpanel" aria-labelledby="tabWinter" data-season-panel="winter" hidden>
+    <div class="season-layout">
+      <div class="season-media">
+        <img src="images/winter/activities.jpg" alt="Trient sous la neige" loading="lazy">
+      </div>
+      <ul class="season-list">
+        <li>
+          <span class="season-meta mono" data-i18n="act.w1.meta">Ski de montagne</span>
+          <h3 data-i18n="act.w1.title">Ski de randonnée &amp; Haute Route</h3>
+          <p data-i18n="act.w1.p">Ski de montagne dans l’espace Mont-Blanc — Cabane du Trient, traversées glacier, étapes de la Haute Route.</p>
+        </li>
+        <li>
+          <span class="season-meta mono" data-i18n="act.w2.meta">Itinéraires balisés</span>
+          <h3 data-i18n="act.w2.title">Raquettes à neige</h3>
+          <p data-i18n="act.w2.p">Sentiers raquettes sur la commune — silence, forêts enneigées, vue sur les sommets.</p>
+        </li>
+        <li>
+          <span class="season-meta mono" data-i18n="act.w3.meta">Déc.–fév.</span>
+          <h3 data-i18n="act.w3.title">Cascades de glace</h3>
+          <p data-i18n="act.w3.p">Six sites et plus de cinquante cascades répertoriées autour de Trient.</p>
+        </li>
+        <li>
+          <span class="season-meta mono" data-i18n="act.w4.meta">Au village</span>
+          <h3 data-i18n="act.w4.title">Jardin des neiges</h3>
+          <p data-i18n="act.w4.p">Mini-téléski, pistes de luge et ski de fond selon l’enneigement — pour débutants et familles.</p>
+        </li>
+        <li>
+          <span class="season-meta mono" data-i18n="act.w5.meta">15–30 min</span>
+          <h3 data-i18n="act.w5.title">Domaines ski alpins</h3>
+          <p data-i18n="act.w5.p">Vallorcine, Le Tour, Les Marécottes — et le domaine de Chamonix à vingt minutes.</p>
+        </li>
+        <li>
+          <span class="season-meta mono" data-i18n="act.w6.meta">Au chalet</span>
+          <h3 data-i18n="act.w6.title">Sauna après les pistes</h3>
+          <p data-i18n="act.w6.p">Sauna privatif et coin du feu au retour.</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="act-gallery">
+    <p class="eyebrow act-gallery-label" data-i18n="act.gallery">En images</p>
+    <div class="act-gallery-grid" id="actGalleryGrid">
+      <button type="button" class="gallery-item act-gallery-item act-gallery-item--wide" data-gallery-src="images/summer/act-1.jpg">
+        <img src="images/summer/act-1.jpg" data-season-src-summer="images/summer/act-1.jpg" data-season-src-winter="images/winter/act-1.jpg" data-season-alt-summer="Randonneur sur une crête au-dessus de la vallée" data-season-alt-winter="Skieur de randonnée sur glacier face aux aiguilles" loading="lazy" alt="Randonneur sur une crête au-dessus de la vallée">
+      </button>
+      <button type="button" class="gallery-item act-gallery-item" data-gallery-src="images/summer/act-2.jpg">
+        <img src="images/summer/act-2.jpg" data-season-src-summer="images/summer/act-2.jpg" data-season-src-winter="images/winter/act-2.jpg" data-season-alt-summer="Train de montagne rouge dans les mélèzes d’automne" data-season-alt-winter="Cascade de glace et grimpeur à Trient" loading="lazy" alt="Train de montagne rouge dans les mélèzes d’automne">
+      </button>
+      <button type="button" class="gallery-item act-gallery-item" data-gallery-src="images/summer/act-3.jpg">
+        <img src="images/summer/act-3.jpg" data-season-src-summer="images/summer/act-3.jpg" data-season-src-winter="images/winter/act-3.jpg" data-season-alt-summer="Alpinistes au sommet d’une crête rocheuse" data-season-alt-winter="Paysage d’hiver autour de Trient" loading="lazy" alt="Alpinistes au sommet d’une crête rocheuse">
+      </button>
+      <button type="button" class="gallery-item act-gallery-item" data-gallery-src="images/summer/act-4.jpg">
+        <img src="images/summer/act-4.jpg" data-season-src-summer="images/summer/act-4.jpg" data-season-src-winter="images/winter/act-4.jpg" data-season-alt-summer="Cordée sur le glacier du Trient" data-season-alt-winter="Village de Trient sous la neige" loading="lazy" alt="Cordée sur le glacier du Trient">
+      </button>
+      <button type="button" class="gallery-item act-gallery-item" data-gallery-src="images/summer/act-5.jpg">
+        <img src="images/summer/act-5.jpg" data-season-src-summer="images/summer/act-5.jpg" data-season-src-winter="images/winter/act-5.jpg" data-season-alt-summer="Randonneuses sur un sentier au-dessus d’un lac d’altitude" data-season-alt-winter="Forêt enneigée près de Trient" loading="lazy" alt="Randonneuses sur un sentier au-dessus d’un lac d’altitude">
+      </button>
+      <button type="button" class="gallery-item act-gallery-item" data-gallery-src="images/summer/act-6.jpg">
+        <img src="images/summer/act-6.jpg" data-season-src-summer="images/summer/act-6.jpg" data-season-src-winter="images/winter/act-6.jpg" data-season-alt-summer="Vététiste sur un sentier face à la vallée" data-season-alt-winter="Sommets enneigés autour de Trient" loading="lazy" alt="Vététiste sur un sentier face à la vallée">
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SÉJOUR & TARIFS ================= -->
+<section class="stay" id="sejour">
+  <div class="section-head">
+    <p class="eyebrow" data-i18n="stay.eyebrow">Réservation directe</p>
+    <h2 data-i18n="stay.title">Séjour &amp; tarifs</h2>
+    <p class="stay-sub" data-i18n="stay.sub">En réservant directement, vous évitez les frais de plateforme — le même chalet, un contact direct avec vos hôtes.</p>
+  </div>
+
+  <div class="stay-panel">
+    <div class="calendar-card" id="calendarCard" hidden>
+      <div class="calendar-head">
+        <button type="button" id="calPrev" aria-label="Mois précédent">‹</button>
+        <h3 id="calMonthLabel" class="mono"></h3>
+        <button type="button" id="calNext" aria-label="Mois suivant">›</button>
+      </div>
+      <div class="calendar-weekdays mono">
+        <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <p class="calendar-note" id="calSync"></p>
+    </div>
+
+    <div class="calendar-card dates-fallback" id="datesFallback">
+      <p class="eyebrow" data-i18n="stay.datesEyebrow">Vos dates</p>
+      <p class="dates-fallback-text" data-i18n="stay.datesHint">Indiquez vos dates, nous vous répondons sous 24 h.</p>
+      <a href="#reserver" class="btn btn-brass" data-i18n="stay.datesCta">Envoyer une demande</a>
+    </div>
+
+    <div class="price-card">
+      <p class="eyebrow" data-i18n="stay.priceEyebrow">Tarif indicatif</p>
+      <p class="price-amount" id="priceAmount">CHF <span data-price id="priceValue">[PRIX / NUIT]</span> <span class="price-unit" data-i18n="stay.priceUnit">/ nuit</span></p>
+      <p class="price-compare" id="priceCompare" hidden></p>
+      <p class="price-detail" data-i18n="stay.priceDetail">Chalet entier · jusqu'à 15 personnes · linge inclus</p>
+      <ol class="pay-steps">
+        <li data-i18n="stay.step1">Vous envoyez votre demande</li>
+        <li data-i18n="stay.step2">Nous confirmons les dates et vous envoyons un lien de paiement sécurisé</li>
+        <li data-i18n="stay.step3">Solde 30 jours avant l'arrivée</li>
+      </ol>
+      <p class="pay-methods" data-i18n="stay.payMethods">Paiement : TWINT, carte bancaire, QR-facture.</p>
+      <ul class="price-list">
+        <li data-i18n="stay.li1">Arrivée dès 16h00 · départ avant 12h00</li>
+        <li data-i18n="stay.li2">Acompte de 30 % après confirmation des dates</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESERVER / CONTACT ================= -->
+<section class="contact" id="reserver">
+  <div class="contact-inner">
+    <div class="contact-text">
+      <p class="eyebrow eyebrow--onDark" data-i18n="contact.eyebrow">Parlons de votre séjour</p>
+      <h2 class="onDark" data-i18n="contact.title">Réserver le chalet</h2>
+      <p class="onDark contact-p" data-i18n="contact.p">Indiquez vos dates et le nombre de voyageurs — Sarah &amp; Anthony vous répondent en général le jour même.</p>
+      <div class="contact-direct" id="contactPhoneWrap" hidden>
+        <a href="#" class="contact-link" id="contactPhoneLink">
+          <span class="contact-link-label" data-i18n="contact.whatsapp">WhatsApp / Téléphone</span>
+          <span class="mono" id="contactPhone">[TEL_A_DEFINIR]</span>
+        </a>
+      </div>
+      <p class="contact-phone-placeholder mono" id="contactPhonePlaceholder">[TEL_A_DEFINIR]</p>
+    </div>
+
+    <form class="contact-form" id="contactForm" novalidate>
+      <div class="hp-field" aria-hidden="true">
+        <label>Company<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="form-row">
+        <label>
+          <span data-i18n="form.name">Nom</span>
+          <input type="text" name="name" required autocomplete="name">
+        </label>
+        <label>
+          <span data-i18n="form.email">Email</span>
+          <input type="email" name="email" required autocomplete="email">
+        </label>
+      </div>
+      <div class="form-row">
+        <label>
+          <span data-i18n="form.checkin">Arrivée</span>
+          <input type="date" name="checkin" required>
+        </label>
+        <label>
+          <span data-i18n="form.checkout">Départ</span>
+          <input type="date" name="checkout" required>
+        </label>
+      </div>
+      <label>
+        <span data-i18n="form.guests">Nombre de voyageurs</span>
+        <input type="number" name="guests" min="1" max="15" value="2" required>
+      </label>
+      <label>
+        <span data-i18n="form.message">Message (facultatif)</span>
+        <textarea name="message" rows="3"></textarea>
+      </label>
+      <button type="submit" class="btn btn-brass btn-full" id="formSubmit" data-i18n="form.submit">Envoyer la demande</button>
+      <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+      <p class="form-note" data-i18n="form.note">Vos données servent uniquement à traiter la demande. Voir les mentions légales.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ================= LOCALISATION ================= -->
+<section class="location">
+  <div class="section-head">
+    <p class="eyebrow" data-i18n="loc.eyebrow">Trient, Valais</p>
+    <h2 data-i18n="loc.title">Entre deux mondes</h2>
+  </div>
+  <div class="location-grid">
+    <p data-i18n="loc.p">Trient se trouve à la frontière franco-suisse, à vingt minutes de Chamonix et de Martigny. Le village est une étape du Tour du Mont-Blanc et le point de départ de nombreuses randonnées vers le glacier du Trient et le barrage d'Émosson. L'adresse exacte du chalet vous est communiquée après confirmation de la réservation.</p>
+    <ul class="location-list mono">
+      <li data-i18n="loc.li1">Glacier du Trient — 1h30 de marche</li>
+      <li data-i18n="loc.li2">Chamonix-Mont-Blanc — 20 min en voiture</li>
+      <li data-i18n="loc.li3">Martigny — 25 min en voiture</li>
+      <li data-i18n="loc.li4">Barrage d'Émosson — 30 min en voiture</li>
+      <li data-i18n="loc.li5">Tour du Mont-Blanc — accès direct</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand">Chalet <em>La Berte</em></p>
+    <p class="mono footer-loc" data-i18n="footer.loc">Trient · Valais · Suisse</p>
+    <div class="footer-links">
+      <a href="#reserver" data-i18n="footer.contact">Contact</a>
+      <a href="#reserver" data-i18n="nav.book">Réserver</a>
+      <a href="mentions-legales/" data-i18n="footer.legal">Mentions légales</a>
+    </div>
+    <p class="footer-fine" data-i18n="footer.fine">Site indépendant — réservation en direct avec vos hôtes.</p>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

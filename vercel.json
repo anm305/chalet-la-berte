@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npm run build",
+  "rewrites": [
+    { "source": "/mentions-legales", "destination": "/mentions-legales/" }
+  ]
+}
