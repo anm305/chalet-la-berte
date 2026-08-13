@@ -153,7 +153,7 @@ const I18N = {
     "stay.datesCta":"Envoyer une demande",
     "stay.calSync":"Dernière synchronisation : {date}",
     "stay.calNoIcal":"Calendrier interactif — les nuits réservées apparaîtront après branchement iCal.",
-    "stay.calLegend":"Cliquez une arrivée, puis un départ. Les prix du calendrier correspondent pour l’instant au chalet entier (− remise directe).",
+    "stay.calLegend":"Cliquez une arrivée, puis un départ. Le calendrier suit la formule choisie (iCal Airbnb). Les prix affichés concernent le chalet entier.",
     "stay.priceEyebrow":"Tarif selon vos dates", "stay.priceUnit":"/ nuit",
     "stay.priceDetail":"Chalet entier · jusqu'à 15 personnes · linge inclus",
     "stay.priceHint":"Choisissez vos dates sur le calendrier (ou dans le formulaire) pour voir le tarif.",
@@ -265,7 +265,7 @@ const I18N = {
     "stay.datesCta":"Send a request",
     "stay.calSync":"Last synced: {date}",
     "stay.calNoIcal":"Interactive calendar — booked nights will appear once iCal is connected.",
-    "stay.calLegend":"Click a check-in, then a check-out. Calendar prices currently reflect the whole chalet (− direct discount).",
+    "stay.calLegend":"Click a check-in, then a check-out. The calendar follows the selected option (Airbnb iCal). Displayed prices are for the whole chalet.",
     "stay.priceEyebrow":"Rate for your dates", "stay.priceUnit":"/ night",
     "stay.priceDetail":"Whole chalet · up to 15 guests · linens included",
     "stay.priceHint":"Pick your dates on the calendar (or in the form) to see the rate.",
@@ -377,7 +377,7 @@ const I18N = {
     "stay.datesCta":"Anfrage senden",
     "stay.calSync":"Letzte Synchronisation: {date}",
     "stay.calNoIcal":"Interaktiver Kalender — gebuchte Nächte erscheinen nach iCal-Anbindung.",
-    "stay.calLegend":"Klicken Sie Anreise, dann Abreise. Kalenderpreise gelten vorerst für das ganze Chalet (− Direktrabatt).",
+    "stay.calLegend":"Klicken Sie Anreise, dann Abreise. Der Kalender folgt der gewählten Formel (Airbnb-iCal). Angezeigte Preise gelten für das ganze Chalet.",
     "stay.priceEyebrow":"Preis für Ihre Daten", "stay.priceUnit":"/ Nacht",
     "stay.priceDetail":"Ganzes Chalet · bis zu 15 Gäste · Bettwäsche inklusive",
     "stay.priceHint":"Wählen Sie Ihre Daten im Kalender (oder im Formular), um den Preis zu sehen.",
@@ -459,7 +459,24 @@ const MONTH_NAMES = {
   de: ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"]
 };
 
-const bookedDates = new Set((CONFIG.availability && CONFIG.availability.booked) || []);
+const bookedDatesByLodging = (() => {
+  const map = {};
+  const by = (CONFIG.availability && CONFIG.availability.byLodging) || {};
+  for (const key of Object.keys(by)) {
+    map[key] = new Set(by[key] || []);
+  }
+  if (!map.whole && CONFIG.availability && CONFIG.availability.booked) {
+    map.whole = new Set(CONFIG.availability.booked);
+  }
+  return map;
+})();
+
+function bookedSetFor(lodging){
+  if (bookedDatesByLodging[lodging]) return bookedDatesByLodging[lodging];
+  if (bookedDatesByLodging.whole) return bookedDatesByLodging.whole;
+  return new Set();
+}
+
 const rateMap = CONFIG.rates || {};
 const discountPct = (CONFIG.pricing && CONFIG.pricing.discountPercent != null)
   ? Number(CONFIG.pricing.discountPercent)
@@ -486,6 +503,7 @@ function renderCalendar(){
   if (!grid || !label) return;
 
   const lang = document.documentElement.getAttribute('data-lang') || 'fr';
+  const bookedDates = bookedSetFor(selectedLodging);
   grid.innerHTML = '';
 
   const year = calCursor.getFullYear();
@@ -511,7 +529,7 @@ function renderCalendar(){
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const booked = bookedDates.has(dateStr);
     const past = dateStr < todayStr;
-    const direct = directPriceFor(dateStr);
+    const direct = selectedLodging === 'whole' ? directPriceFor(dateStr) : null;
 
     cell.className = 'day';
     cell.dataset.date = dateStr;
@@ -612,6 +630,7 @@ function applyLodging(id, opts = {}){
   if (!LODGINGS[id]) id = 'whole';
   selectedLodging = id;
   const max = lodgingCapacity(id);
+  const booked = bookedSetFor(id);
 
   document.querySelectorAll('.lodging-option').forEach((btn) => {
     const active = btn.getAttribute('data-lodging') === id;
@@ -629,7 +648,33 @@ function applyLodging(id, opts = {}){
     if (Number.isFinite(current) && current > max) guestsInput.value = String(max);
   }
 
+  // Drop selected dates that are unavailable for this listing
+  if (calCheckin && booked.has(calCheckin)){
+    calCheckin = null;
+    calCheckout = null;
+  } else if (calCheckout && booked.has(calCheckout)){
+    calCheckout = null;
+  } else if (calCheckin && calCheckout){
+    for (let day = calCheckin; day < calCheckout; ){
+      if (booked.has(day)){
+        calCheckin = null;
+        calCheckout = null;
+        break;
+      }
+      const d = new Date(`${day}T12:00:00Z`);
+      d.setUTCDate(d.getUTCDate() + 1);
+      day = d.toISOString().slice(0, 10);
+    }
+  }
+
+  const form = document.getElementById('contactForm');
+  if (form){
+    form.checkin.value = calCheckin || '';
+    form.checkout.value = calCheckout || '';
+  }
+
   updateLodgingDetail();
+  renderCalendar();
   if (!opts.silent){
     setupPricing();
     refreshQuoteFromForm();

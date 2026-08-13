@@ -60,26 +60,61 @@ function parseIcal(raw) {
   return booked;
 }
 
+async function fetchFeed(url) {
+  const res = await fetch(url, { headers: { "User-Agent": "ChaletLaBerte/1.0" } });
+  if (!res.ok) {
+    throw new Error(`iCal feed failed (${res.status}): ${url}`);
+  }
+  return parseIcal(await res.text());
+}
+
+/** Lodging keys → env var names for dedicated feeds */
+const LODGING_ICAL_ENV = {
+  whole: "ICAL_FEED_WHOLE",
+  four: "ICAL_FEED_FOUR",
+  three: "ICAL_FEED_THREE",
+  two: "ICAL_FEED_TWO",
+  one: "ICAL_FEED_ONE"
+};
+
 async function fetchAvailability() {
-  const urls = (process.env.ICAL_FEED_URLS || "")
+  const byLodging = {};
+  let any = false;
+
+  for (const [lodging, envKey] of Object.entries(LODGING_ICAL_ENV)) {
+    const url = (process.env[envKey] || "").trim();
+    if (!url) continue;
+    const dates = await fetchFeed(url);
+    byLodging[lodging] = [...dates].sort();
+    any = true;
+  }
+
+  // Legacy: comma-separated list → treat as whole (or merge if whole already set)
+  const legacyUrls = (process.env.ICAL_FEED_URLS || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
 
-  if (!urls.length) return null;
-
-  const booked = new Set();
-  for (const url of urls) {
-    const res = await fetch(url, { headers: { "User-Agent": "ChaletLaBerte/1.0" } });
-    if (!res.ok) {
-      throw new Error(`iCal feed failed (${res.status}): ${url}`);
+  if (legacyUrls.length && !byLodging.whole) {
+    const booked = new Set();
+    for (const url of legacyUrls) {
+      const dates = await fetchFeed(url);
+      for (const day of dates) booked.add(day);
     }
-    const dates = parseIcal(await res.text());
-    for (const day of dates) booked.add(day);
+    byLodging.whole = [...booked].sort();
+    any = true;
+  }
+
+  if (!any) return null;
+
+  const union = new Set();
+  for (const days of Object.values(byLodging)) {
+    for (const day of days) union.add(day);
   }
 
   return {
-    booked: [...booked].sort(),
+    byLodging,
+    booked: byLodging.whole || [...union].sort(),
     syncedAt: new Date().toISOString()
   };
 }
@@ -156,6 +191,8 @@ if (/fonts\.googleapis\.com|fonts\.gstatic\.com/i.test(html + css)) {
   throw new Error("Build check: Google Fonts request still present");
 }
 
-const calendarMode = availability ? "iCal" : "interactive (Excel rates)";
+const lodgingFeeds = availability && availability.byLodging
+  ? Object.keys(availability.byLodging).join("+")
+  : "none";
 const ratesCount = rates ? Object.keys(rates).length : 0;
-console.log(`Build OK — form endpoint ${process.env.PUBLIC_FORM_ENDPOINT ? "set" : "empty"}, calendar: ${calendarMode}, rates: ${ratesCount} nights`);
+console.log(`Build OK — form endpoint ${process.env.PUBLIC_FORM_ENDPOINT ? "set" : "empty"}, iCal: ${lodgingFeeds}, rates: ${ratesCount} nights`);
