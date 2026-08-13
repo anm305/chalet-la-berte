@@ -403,26 +403,61 @@
     <p class="lodging-combos mono" data-i18n="stay.lodgingCombos">Combinaisons possibles sur les mêmes dates : tout le chalet · 4 ch + 1 ch · 3 ch + 2 ch · 1 chambre seule</p>
     <div class="lodging-options" role="radiogroup" aria-labelledby="lodgingPickLabel">
       <span id="lodgingPickLabel" class="visually-hidden" data-i18n="stay.lodgingLabel">Quelle formule ?</span>
-      <button type="button" class="lodging-option is-active" role="radio" aria-checked="true" data-lodging="whole">
-        <span class="lodging-name" data-i18n="lodging.whole.name">Tout le chalet</span>
-        <span class="lodging-meta mono" data-i18n="lodging.whole.meta">5 chambres · jusqu'à 15 pers.</span>
-      </button>
-      <button type="button" class="lodging-option" role="radio" aria-checked="false" data-lodging="four">
-        <span class="lodging-name" data-i18n="lodging.four.name">4 chambres</span>
-        <span class="lodging-meta mono" data-i18n="lodging.four.meta">Logement · jusqu'à 12 pers.</span>
-      </button>
-      <button type="button" class="lodging-option" role="radio" aria-checked="false" data-lodging="three">
-        <span class="lodging-name" data-i18n="lodging.three.name">3 chambres</span>
-        <span class="lodging-meta mono" data-i18n="lodging.three.meta">Logement · jusqu'à 9 pers.</span>
-      </button>
-      <button type="button" class="lodging-option" role="radio" aria-checked="false" data-lodging="two">
-        <span class="lodging-name" data-i18n="lodging.two.name">2 chambres</span>
-        <span class="lodging-meta mono" data-i18n="lodging.two.meta">Logement · jusqu'à 6 pers.</span>
-      </button>
-      <button type="button" class="lodging-option" role="radio" aria-checked="false" data-lodging="one">
-        <span class="lodging-name" data-i18n="lodging.one.name">1 chambre</span>
-        <span class="lodging-meta mono" data-i18n="lodging.one.meta">Logement · jusqu'à 3 pers.</span>
-      </button>
+
+      <div class="lodging-option is-active" data-lodging="whole">
+        <button type="button" class="lodging-select" role="radio" aria-checked="true" data-lodging-select="whole">
+          <span class="lodging-name" data-i18n="lodging.whole.name">Tout le chalet</span>
+          <span class="lodging-meta mono" data-i18n="lodging.whole.meta">5 chambres · jusqu'à 15 pers.</span>
+        </button>
+        <button type="button" class="lodging-more" data-lodging-more="whole" data-i18n="lodging.more">En savoir plus</button>
+      </div>
+
+      <div class="lodging-option" data-lodging="four">
+        <button type="button" class="lodging-select" role="radio" aria-checked="false" data-lodging-select="four">
+          <span class="lodging-name" data-i18n="lodging.four.name">4 chambres</span>
+          <span class="lodging-meta mono" data-i18n="lodging.four.meta">Logement · jusqu'à 12 pers.</span>
+        </button>
+        <button type="button" class="lodging-more" data-lodging-more="four" data-i18n="lodging.more">En savoir plus</button>
+      </div>
+
+      <div class="lodging-option" data-lodging="three">
+        <button type="button" class="lodging-select" role="radio" aria-checked="false" data-lodging-select="three">
+          <span class="lodging-name" data-i18n="lodging.three.name">3 chambres</span>
+          <span class="lodging-meta mono" data-i18n="lodging.three.meta">Logement · jusqu'à 9 pers.</span>
+        </button>
+        <button type="button" class="lodging-more" data-lodging-more="three" data-i18n="lodging.more">En savoir plus</button>
+      </div>
+
+      <div class="lodging-option" data-lodging="two">
+        <button type="button" class="lodging-select" role="radio" aria-checked="false" data-lodging-select="two">
+          <span class="lodging-name" data-i18n="lodging.two.name">2 chambres</span>
+          <span class="lodging-meta mono" data-i18n="lodging.two.meta">Logement · jusqu'à 6 pers.</span>
+        </button>
+        <button type="button" class="lodging-more" data-lodging-more="two" data-i18n="lodging.more">En savoir plus</button>
+      </div>
+
+      <div class="lodging-option" data-lodging="one">
+        <button type="button" class="lodging-select" role="radio" aria-checked="false" data-lodging-select="one">
+          <span class="lodging-name" data-i18n="lodging.one.name">1 chambre</span>
+          <span class="lodging-meta mono" data-i18n="lodging.one.meta">Logement · jusqu'à 3 pers.</span>
+        </button>
+        <button type="button" class="lodging-more" data-lodging-more="one" data-i18n="lodging.more">En savoir plus</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="lodging-sheet" id="lodgingSheet" hidden>
+    <div class="lodging-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="lodgingSheetTitle">
+      <header class="lodging-sheet-head">
+        <div>
+          <p class="eyebrow" data-i18n="lodging.sheetEyebrow">Chambres incluses</p>
+          <h3 id="lodgingSheetTitle"></h3>
+          <p class="lodging-sheet-sub mono" id="lodgingSheetSub"></p>
+        </div>
+        <button type="button" class="lodging-sheet-close" id="lodgingSheetClose" aria-label="Fermer">×</button>
+      </header>
+      <div class="lodging-sheet-grid" id="lodgingSheetGrid"></div>
+      <p class="lodging-sheet-note mono" data-i18n="lodging.sheetNote">Cliquez une photo pour l’agrandir.</p>
     </div>
   </div>
 

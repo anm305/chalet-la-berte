@@ -9,6 +9,23 @@ const LODGINGS = {
   one:   { rooms: 1, capacity: 3 }
 };
 
+/* Room sets for each listing — matches 4+1 and 3+2 splits */
+const ROOM_CATALOG = {
+  1: { src: 'images/chambre-1.jpg', titleKey: 'room1.title', bedsKey: 'room1.beds', alt: 'Chambre 1 — lit queen avec vue sur la neige' },
+  2: { src: 'images/chambre-2.jpg', titleKey: 'room2.title', bedsKey: 'room2.beds', alt: 'Chambre 2 — lit double' },
+  3: { src: 'images/chambre-3.jpg', titleKey: 'room3.title', bedsKey: 'room3.beds', alt: 'Chambre 3 — lit queen, mur en bois' },
+  4: { src: 'images/chambre-4.jpg', titleKey: 'room4.title', bedsKey: 'room4.beds', alt: 'Chambre 4 — lits simples, superposé et couchage d\'appoint' },
+  5: { src: 'images/chambre-5.jpg', titleKey: 'room5.title', bedsKey: 'room5.beds', alt: 'Chambre 5 — lit queen avec vue montagne' }
+};
+
+const LODGING_ROOM_IDS = {
+  whole: [1, 2, 3, 4, 5],
+  four:  [1, 2, 3, 4],
+  three: [1, 2, 3],
+  two:   [4, 5],
+  one:   [5]
+};
+
 let selectedLodging = 'whole';
 
 function lodgingCapacity(id){
@@ -148,6 +165,11 @@ const I18N = {
     "lodging.one.name":"1 chambre",
     "lodging.one.meta":"Logement · jusqu'à 3 pers.",
     "lodging.one.detail":"Logement 1 chambre · jusqu'à 3 personnes · linge inclus",
+    "lodging.more":"En savoir plus",
+    "lodging.sheetEyebrow":"Chambres incluses",
+    "lodging.sheetNote":"Cliquez une photo pour l’agrandir.",
+    "lodging.sheetSub":"{count} chambres dans cette formule",
+    "lodging.sheetSubOne":"1 chambre dans cette formule",
     "stay.datesEyebrow":"Vos dates",
     "stay.datesHint":"Indiquez vos dates, nous vous répondons sous 24 h.",
     "stay.datesCta":"Envoyer une demande",
@@ -260,6 +282,11 @@ const I18N = {
     "lodging.one.name":"1 bedroom",
     "lodging.one.meta":"Unit · up to 3 guests",
     "lodging.one.detail":"1-bedroom unit · up to 3 guests · linens included",
+    "lodging.more":"See photos",
+    "lodging.sheetEyebrow":"Bedrooms included",
+    "lodging.sheetNote":"Click a photo to enlarge.",
+    "lodging.sheetSub":"{count} bedrooms in this option",
+    "lodging.sheetSubOne":"1 bedroom in this option",
     "stay.datesEyebrow":"Your dates",
     "stay.datesHint":"Tell us your dates — we reply within 24 hours.",
     "stay.datesCta":"Send a request",
@@ -372,6 +399,11 @@ const I18N = {
     "lodging.one.name":"1 Zimmer",
     "lodging.one.meta":"Einheit · bis 3 Pers.",
     "lodging.one.detail":"1-Zimmer-Einheit · bis 3 Personen · Bettwäsche inkl.",
+    "lodging.more":"Mehr erfahren",
+    "lodging.sheetEyebrow":"Enthaltene Zimmer",
+    "lodging.sheetNote":"Klicken Sie ein Foto zum Vergrössern.",
+    "lodging.sheetSub":"{count} Zimmer in dieser Formel",
+    "lodging.sheetSubOne":"1 Zimmer in dieser Formel",
     "stay.datesEyebrow":"Ihre Daten",
     "stay.datesHint":"Nennen Sie uns Ihre Daten — wir antworten innert 24 Stunden.",
     "stay.datesCta":"Anfrage senden",
@@ -632,10 +664,11 @@ function applyLodging(id, opts = {}){
   const max = lodgingCapacity(id);
   const booked = bookedSetFor(id);
 
-  document.querySelectorAll('.lodging-option').forEach((btn) => {
-    const active = btn.getAttribute('data-lodging') === id;
-    btn.classList.toggle('is-active', active);
-    btn.setAttribute('aria-checked', active ? 'true' : 'false');
+  document.querySelectorAll('.lodging-option').forEach((card) => {
+    const active = card.getAttribute('data-lodging') === id;
+    card.classList.toggle('is-active', active);
+    const selectBtn = card.querySelector('[data-lodging-select]');
+    if (selectBtn) selectBtn.setAttribute('aria-checked', active ? 'true' : 'false');
   });
 
   const formSelect = document.getElementById('formLodging');
@@ -682,13 +715,94 @@ function applyLodging(id, opts = {}){
 }
 
 function setupLodgingPicker(){
-  document.querySelectorAll('.lodging-option').forEach((btn) => {
-    btn.addEventListener('click', () => applyLodging(btn.getAttribute('data-lodging')));
+  document.querySelectorAll('[data-lodging-select]').forEach((btn) => {
+    btn.addEventListener('click', () => applyLodging(btn.getAttribute('data-lodging-select')));
+  });
+  document.querySelectorAll('[data-lodging-more]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute('data-lodging-more');
+      applyLodging(id, { silent: true });
+      openLodgingSheet(id);
+    });
   });
   const formSelect = document.getElementById('formLodging');
   if (formSelect){
     formSelect.addEventListener('change', () => applyLodging(formSelect.value));
   }
+
+  const sheet = document.getElementById('lodgingSheet');
+  const closeBtn = document.getElementById('lodgingSheetClose');
+  if (closeBtn) closeBtn.addEventListener('click', closeLodgingSheet);
+  if (sheet){
+    sheet.addEventListener('click', (e) => {
+      if (e.target === sheet) closeLodgingSheet();
+    });
+  }
+}
+
+function openLodgingSheet(id){
+  const sheet = document.getElementById('lodgingSheet');
+  const grid = document.getElementById('lodgingSheetGrid');
+  const title = document.getElementById('lodgingSheetTitle');
+  const sub = document.getElementById('lodgingSheetSub');
+  if (!sheet || !grid || !title) return;
+
+  const roomIds = LODGING_ROOM_IDS[id] || LODGING_ROOM_IDS.whole;
+  title.textContent = lodgingLabel(id);
+  if (sub){
+    sub.textContent = roomIds.length === 1
+      ? t('lodging.sheetSubOne')
+      : t('lodging.sheetSub', { count: roomIds.length });
+  }
+
+  grid.innerHTML = '';
+  roomIds.forEach((roomId) => {
+    const room = ROOM_CATALOG[roomId];
+    if (!room) return;
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'lodging-sheet-card';
+    card.setAttribute('data-gallery-src', room.src);
+
+    const img = document.createElement('img');
+    img.src = room.src;
+    img.alt = room.alt;
+    img.loading = 'lazy';
+
+    const info = document.createElement('div');
+    info.className = 'lodging-sheet-card-info';
+    const strong = document.createElement('strong');
+    strong.textContent = t(room.titleKey);
+    const span = document.createElement('span');
+    span.className = 'mono';
+    span.textContent = t(room.bedsKey);
+    info.appendChild(strong);
+    info.appendChild(span);
+
+    card.appendChild(img);
+    card.appendChild(info);
+    grid.appendChild(card);
+  });
+
+  grid.onclick = (e) => {
+    const item = e.target.closest('[data-gallery-src]');
+    if (!item) return;
+    const items = [...grid.querySelectorAll('[data-gallery-src]')];
+    openLightbox(items.indexOf(item), grid);
+  };
+
+  sheet.hidden = false;
+  document.body.style.overflow = 'hidden';
+  const closeBtn = document.getElementById('lodgingSheetClose');
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeLodgingSheet(){
+  const sheet = document.getElementById('lodgingSheet');
+  if (!sheet || sheet.hidden) return;
+  sheet.hidden = true;
+  if (lightbox && lightbox.hidden) document.body.style.overflow = '';
 }
 
 /* ============ CONTACT FORM ============ */
@@ -1067,7 +1181,8 @@ function closeLightbox(){
   lightboxImg.src = '';
   lightboxImg.alt = 'Vue agrandie';
   lightboxScope = null;
-  document.body.style.overflow = '';
+  const sheet = document.getElementById('lodgingSheet');
+  if (!sheet || sheet.hidden) document.body.style.overflow = '';
 }
 
 function stepLightbox(delta){
@@ -1101,6 +1216,11 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape'){
     if (!lightbox.hidden){
       closeLightbox();
+      return;
+    }
+    const sheet = document.getElementById('lodgingSheet');
+    if (sheet && !sheet.hidden){
+      closeLodgingSheet();
       return;
     }
     if (!langMenu.hidden){

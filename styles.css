@@ -560,15 +560,11 @@ img{max-width:100%; display:block;}
   gap:0.55rem;
 }
 .lodging-option{
-  display:flex; flex-direction:column; align-items:flex-start; gap:0.25rem;
-  text-align:left;
-  padding:0.85rem 0.9rem;
+  display:flex; flex-direction:column; align-items:stretch; gap:0.35rem;
+  padding:0.75rem 0.85rem 0.65rem;
   background:transparent;
   border:1px solid rgba(34, 54, 46, 0.18);
   border-radius:var(--radius);
-  color:var(--ink);
-  cursor:pointer;
-  font-family:inherit;
   transition:border-color 0.2s ease, background 0.2s ease;
 }
 .lodging-option:hover{border-color:var(--brass);}
@@ -576,13 +572,99 @@ img{max-width:100%; display:block;}
   border-color:var(--brass);
   background:rgba(199,168,108,0.16);
 }
+.lodging-select{
+  display:flex; flex-direction:column; align-items:flex-start; gap:0.25rem;
+  text-align:left; width:100%;
+  padding:0; border:0; background:none; cursor:pointer;
+  font-family:inherit; color:inherit;
+}
 .lodging-name{font-size:0.95rem; font-weight:500; color:var(--pine); line-height:1.25;}
 .lodging-meta{font-size:0.68rem; color:var(--ink-soft); letter-spacing:0.01em; line-height:1.35;}
+.lodging-more{
+  align-self:flex-start;
+  margin-top:0.15rem;
+  padding:0;
+  border:0; background:none;
+  font-family:var(--mono); font-size:0.68rem;
+  color:var(--brass); letter-spacing:0.02em;
+  text-decoration:underline; text-underline-offset:0.18em;
+  cursor:pointer;
+}
+.lodging-more:hover{color:var(--pine);}
 @media(max-width:900px){
   .lodging-options{grid-template-columns:repeat(2, minmax(0, 1fr));}
 }
 @media(max-width:480px){
   .lodging-options{grid-template-columns:1fr;}
+}
+
+.lodging-sheet{
+  position:fixed; inset:0; z-index:90;
+  background:rgba(18,33,27,0.55);
+  display:flex; align-items:flex-end; justify-content:center;
+  padding:0;
+}
+.lodging-sheet[hidden]{display:none;}
+.lodging-sheet-panel{
+  width:min(920px, 100%);
+  max-height:min(88vh, 820px);
+  overflow:auto;
+  background:var(--snow);
+  border-radius:var(--radius) var(--radius) 0 0;
+  padding:1.4rem 1.5rem 1.6rem;
+  box-shadow:0 -12px 40px rgba(18,33,27,0.18);
+  animation:lodgingSheetIn 0.28s ease;
+}
+@keyframes lodgingSheetIn{
+  from{transform:translateY(18px); opacity:0.6;}
+  to{transform:translateY(0); opacity:1;}
+}
+@media (prefers-reduced-motion: reduce){
+  .lodging-sheet-panel{animation:none;}
+}
+.lodging-sheet-head{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:1rem;
+  margin-bottom:1.1rem;
+}
+.lodging-sheet-head h3{
+  font-family:var(--display); font-size:1.55rem; margin:0.15rem 0 0.25rem; color:var(--pine);
+}
+.lodging-sheet-sub{margin:0; color:var(--ink-soft); font-size:var(--micro); line-height:1.45;}
+.lodging-sheet-close{
+  width:44px; height:44px; flex-shrink:0;
+  border:1px solid var(--brass); border-radius:50%;
+  background:none; color:var(--brass); font-size:1.35rem; cursor:pointer;
+}
+.lodging-sheet-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:0.75rem;
+}
+@media(min-width:720px){
+  .lodging-sheet-grid{grid-template-columns:repeat(3, minmax(0, 1fr));}
+}
+.lodging-sheet-card{
+  display:block; width:100%; padding:0; border:0; background:none;
+  text-align:left; cursor:pointer; color:inherit; font:inherit;
+}
+.lodging-sheet-card img{
+  width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
+  border-radius:var(--radius);
+}
+.lodging-sheet-card-info{padding:0.45rem 0.1rem 0.2rem;}
+.lodging-sheet-card-info strong{
+  display:block; font-size:0.92rem; color:var(--pine); font-weight:500;
+}
+.lodging-sheet-card-info span{
+  display:block; margin-top:0.15rem;
+  font-family:var(--mono); font-size:0.68rem; color:var(--ink-soft); line-height:1.4;
+}
+.lodging-sheet-note{
+  margin:1rem 0 0; color:var(--ink-soft); font-size:var(--micro);
+}
+@media(min-width:880px){
+  .lodging-sheet{align-items:center; padding:2rem 1.5rem;}
+  .lodging-sheet-panel{border-radius:var(--radius); max-height:min(84vh, 780px);}
 }
 .stay-panel{
   max-width:var(--maxw); margin:0 auto; padding:0 6vw;
