@@ -7,52 +7,45 @@ Site vitrine + demande de réservation directe.
 ```bash
 cp .env.example .env
 npm run build
-# API /api/quote nécessite `vercel dev` (pas le simple http.server)
-npx vercel dev
+npx vercel dev   # nécessaire pour /api/quote
 ```
 
-## Indexer le prix sur Airbnb (solution)
+## Prix indexés sur Airbnb (gratuit)
 
-Airbnb **ne publie pas** les prix nuit par nuit via iCal (disponibilités seulement).
+Airbnb ne publie pas les prix via iCal. Solution gratuite :
 
-La solution retenue : **PriceLabs** comme source de vérité tarifaire.
+1. Installer [Airbnb Host Rate Exporter](https://chromewebstore.google.com/detail/airbnb-host-rate-exporter/kcpoffmbgofohipihbaaphemjodoeinc) (Chrome)
+2. Calendrier hôte Airbnb → vue année → exporter le CSV
+3. Importer dans le projet :
 
+```bash
+npm run import:rates -- ~/Downloads/airbnb-rates.csv
+git add data/rates.csv && git commit -m "Update Airbnb rates" && git push
 ```
-Airbnb ←→ PriceLabs → /api/quote → site (− x % direct)
-```
 
-1. Crée un compte sur [PriceLabs](https://hello.pricelabs.co/) et **connecte ton annonce Airbnb**.
-2. Active la **Customer API** et récupère la clé.
-3. Dans Vercel → Settings → Environment Variables :
+Le site calcule alors : **somme des nuits Airbnb − `PUBLIC_DIRECT_DISCOUNT_PERCENT`** (défaut 10 %).
+
+Priorité des sources de prix :
+1. PriceLabs (si configuré)
+2. `data/rates.csv`
+3. `PUBLIC_AIRBNB_NIGHTLY_CHF` (tarif plat de secours)
+
+## PriceLabs (option payante, auto)
 
 ```bash
 PRICELABS_API_KEY=...
-PRICELABS_LISTING_ID=...   # ID visible dans PriceLabs
+PRICELABS_LISTING_ID=...
 PRICELABS_PMS=airbnb
 PUBLIC_DIRECT_DISCOUNT_PERCENT=10
 ```
 
-4. Redeploy.
-
-Sur le site : le visiteur choisit ses dates → le tarif affiché = **somme des nuits Airbnb (PriceLabs) − remise directe**.
-
-Sans PriceLabs, tu peux temporairement poser un fallback plat :
-
-```bash
-PUBLIC_AIRBNB_NIGHTLY_CHF=800
-PUBLIC_DIRECT_DISCOUNT_PERCENT=10
-```
-
-## Synchroniser le calendrier (iCal)
-
-1. Airbnb hôte → **Calendrier** → **Exporter le calendrier** → URL `.ics`
-2. Variable Vercel :
+## Calendrier (disponibilités)
 
 ```bash
 ICAL_FEED_URLS=https://www.airbnb.fr/calendar/ical/XXXX.ics
 ```
 
-3. Redeploy. Sans URL → mode « indiquez vos dates ».
+Sans URL → « indiquez vos dates ».
 
 ## Formulaire
 

@@ -1,14 +1,14 @@
 /**
- * Quote API — nightly rates indexed via PriceLabs (synced with Airbnb),
- * then direct-booking discount applied.
+ * Quote API — nightly rates from:
+ *   1. PriceLabs (optional, auto)
+ *   2. data/rates.csv (free Airbnb export)
+ *   3. PUBLIC_AIRBNB_NIGHTLY_CHF (flat fallback)
  *
- * Env:
- *   PRICELABS_API_KEY
- *   PRICELABS_LISTING_ID
- *   PRICELABS_PMS          (default: airbnb)
- *   PUBLIC_DIRECT_DISCOUNT_PERCENT (default: 10)
- *   PUBLIC_AIRBNB_NIGHTLY_CHF      (fallback flat rate if PriceLabs unset)
+ * Then applies PUBLIC_DIRECT_DISCOUNT_PERCENT for direct booking.
  */
+
+const fs = require("fs");
+const path = require("path");
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -18,9 +18,26 @@ function json(res, status, body) {
 }
 
 function parseDate(value) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return null;
-  const d = new Date(`${value}T12:00:00Z`);
-  return Number.isNaN(d.getTime()) ? null : value;
+  if (!value) return null;
+  const raw = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    const d = new Date(`${raw}T12:00:00Z`);
+    return Number.isNaN(d.getTime()) ? null : raw;
+  }
+  // DD/MM/YYYY or MM/DD/YYYY — prefer ISO from exporter; also accept DD.MM.YYYY
+  const eu = raw.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/);
+  if (eu) {
+    const iso = `${eu[3]}-${eu[2].padStart(2, "0")}-${eu[1].padStart(2, "0")}`;
+    const d = new Date(`${iso}T12:00:00Z`);
+    return Number.isNaN(d.getTime()) ? null : iso;
+  }
+  return null;
+}
+
+function parsePrice(value) {
+  if (value == null || value === "") return null;
+  const n = Number(String(value).replace(/[^\d.,-]/g, "").replace(",", "."));
+  return Number.isFinite(n) && n > 0 ? n : null;
 }
 
 function nightsBetween(checkin, checkout) {
@@ -50,6 +67,96 @@ function applyDiscount(amount, pct) {
   return Math.round(amount * (1 - pct / 100));
 }
 
+function splitCsvLine(line) {
+  const cells = [];
+  let cur = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+    if (ch === "," && !inQuotes) {
+      cells.push(cur.trim());
+      cur = "";
+      continue;
+    }
+    cur += ch;
+  }
+  cells.push(cur.trim());
+  return cells;
+}
+
+function normalizeHeader(h) {
+  return String(h || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
+}
+
+function loadRatesCsv() {
+  const file = path.join(process.cwd(), "data", "rates.csv");
+  if (!fs.existsSync(file)) return null;
+
+  const text = fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "");
+  const lines = text.split(/\r?\n/).filter((l) => l.trim() && !l.trim().startsWith("#"));
+  if (lines.length < 2) return null;
+
+  const headers = splitCsvLine(lines[0]).map(normalizeHeader);
+  const dateKeys = ["date", "pricingdate", "day"];
+  const priceKeys = [
+    "price",
+    "airbnb",
+    "airbnbprice",
+    "nightlyrate",
+    "nightly",
+    "rate",
+    "amount"
+  ];
+  // Prefer cents column only if no plain price
+  const centsKeys = ["nightlyrateincents", "priceincents", "cents"];
+
+  let dateIdx = headers.findIndex((h) => dateKeys.includes(h));
+  let priceIdx = headers.findIndex((h) => priceKeys.includes(h));
+  let centsIdx = headers.findIndex((h) => centsKeys.includes(h));
+
+  // Headerless fallback: date,price
+  const hasHeader = dateIdx >= 0 || priceIdx >= 0 || centsIdx >= 0;
+  if (!hasHeader) {
+    dateIdx = 0;
+    priceIdx = 1;
+  }
+
+  const byDate = new Map();
+  const startRow = hasHeader ? 1 : 0;
+  for (let i = startRow; i < lines.length; i++) {
+    const cols = splitCsvLine(lines[i]);
+    const date = parseDate(cols[dateIdx >= 0 ? dateIdx : 0]);
+    let price = null;
+    if (priceIdx >= 0) price = parsePrice(cols[priceIdx]);
+    if (price == null && centsIdx >= 0) {
+      const cents = parsePrice(cols[centsIdx]);
+      if (cents != null) price = cents / 100;
+    }
+    if (date && price != null) byDate.set(date, price);
+  }
+
+  if (!byDate.size) return null;
+
+  let syncedAt = null;
+  try {
+    syncedAt = fs.statSync(file).mtime.toISOString();
+  } catch (_) { /* ignore */ }
+
+  return { byDate, currency: "CHF", source: "csv", syncedAt };
+}
+
 async function fetchPriceLabsRates(checkin, checkout) {
   const apiKey = (process.env.PRICELABS_API_KEY || "").trim();
   const listingId = (process.env.PRICELABS_LISTING_ID || "").trim();
@@ -69,7 +176,6 @@ async function fetchPriceLabsRates(checkin, checkout) {
           listing_id: listingId,
           pms,
           date_from: checkin,
-          // PriceLabs range is inclusive; checkout night is not billed
           date_to: (() => {
             const d = new Date(`${checkout}T12:00:00Z`);
             d.setUTCDate(d.getUTCDate() - 1);
@@ -95,7 +201,7 @@ async function fetchPriceLabsRates(checkin, checkout) {
   for (const row of listing.data || []) {
     const date = row.date || row.pricing_date;
     const price = Number(row.price ?? row.recommended_price ?? row.adr);
-    if (date && Number.isFinite(price)) byDate.set(date.slice(0, 10), price);
+    if (date && Number.isFinite(price)) byDate.set(String(date).slice(0, 10), price);
   }
   return { byDate, currency: listing.currency || "CHF", source: "pricelabs" };
 }
@@ -108,6 +214,18 @@ function fallbackRates(checkin, checkout) {
     byDate.set(night, base);
   }
   return { byDate, currency: "CHF", source: "flat" };
+}
+
+function resolveRates(checkin, checkout) {
+  // Priority: PriceLabs → CSV → flat
+  return (
+    fetchPriceLabsRates(checkin, checkout).then((pl) => {
+      if (pl && pl.byDate.size) return pl;
+      const csv = loadRatesCsv();
+      if (csv) return csv;
+      return fallbackRates(checkin, checkout);
+    })
+  );
 }
 
 module.exports = async function handler(req, res) {
@@ -138,11 +256,11 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const rates = (await fetchPriceLabsRates(checkin, checkout)) || fallbackRates(checkin, checkout);
+    const rates = await resolveRates(checkin, checkout);
     if (!rates) {
       return json(res, 503, {
         error: "pricing_not_configured",
-        message: "Connectez PriceLabs (Airbnb) ou définissez PUBLIC_AIRBNB_NIGHTLY_CHF."
+        message: "Ajoutez data/rates.csv (export Airbnb) ou PriceLabs / PUBLIC_AIRBNB_NIGHTLY_CHF."
       });
     }
 
@@ -152,7 +270,8 @@ module.exports = async function handler(req, res) {
       return json(res, 422, {
         error: "incomplete_rates",
         missing,
-        message: "Tarifs incomplets pour ces dates."
+        source: rates.source,
+        message: "Tarifs incomplets pour ces dates — mettez à jour data/rates.csv."
       });
     }
 
@@ -165,8 +284,6 @@ module.exports = async function handler(req, res) {
 
     const airbnbTotal = airbnbNights.reduce((s, n) => s + n.airbnb, 0);
     const directTotal = airbnbNights.reduce((s, n) => s + n.direct, 0);
-    const airbnbAvg = Math.round(airbnbTotal / nights);
-    const directAvg = Math.round(directTotal / nights);
 
     return json(res, 200, {
       checkin,
@@ -175,8 +292,9 @@ module.exports = async function handler(req, res) {
       currency: rates.currency || "CHF",
       discountPercent: pct,
       source: rates.source,
-      airbnb: { avgNightly: airbnbAvg, total: Math.round(airbnbTotal) },
-      direct: { avgNightly: directAvg, total: Math.round(directTotal) },
+      syncedAt: rates.syncedAt || null,
+      airbnb: { avgNightly: Math.round(airbnbTotal / nights), total: Math.round(airbnbTotal) },
+      direct: { avgNightly: Math.round(directTotal / nights), total: Math.round(directTotal) },
       nightsDetail: airbnbNights
     });
   } catch (err) {

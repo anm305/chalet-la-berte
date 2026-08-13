@@ -2,6 +2,7 @@
   "name": "chalet-la-berte",
   "private": true,
   "scripts": {
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "import:rates": "node scripts/import-rates.mjs"
   }
 }

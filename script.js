@@ -128,6 +128,7 @@ const I18N = {
     "stay.priceTotal":"{total} CHF pour {nights} nuits",
     "stay.priceLoading":"Calcul du tarif…",
     "stay.priceUnavailable":"Tarif à confirmer pour ces dates — envoyez votre demande.",
+    "stay.priceSynced":"Tarifs Airbnb synchronisés le {date}.",
     "stay.step1":"Vous envoyez votre demande",
     "stay.step2":"Nous confirmons les dates et vous envoyons un lien de paiement sécurisé",
     "stay.step3":"Solde 30 jours avant l'arrivée",
@@ -218,6 +219,7 @@ const I18N = {
     "stay.priceTotal":"{total} CHF for {nights} nights",
     "stay.priceLoading":"Calculating rate…",
     "stay.priceUnavailable":"Rate to confirm for these dates — send your request.",
+    "stay.priceSynced":"Airbnb rates synced on {date}.",
     "stay.step1":"You send your request",
     "stay.step2":"We confirm the dates and send you a secure payment link",
     "stay.step3":"Balance due 30 days before arrival",
@@ -308,6 +310,7 @@ const I18N = {
     "stay.priceTotal":"{total} CHF für {nights} Nächte",
     "stay.priceLoading":"Preis wird berechnet…",
     "stay.priceUnavailable":"Preis für diese Daten zu bestätigen — senden Sie Ihre Anfrage.",
+    "stay.priceSynced":"Airbnb-Preise synchronisiert am {date}.",
     "stay.step1":"Sie senden Ihre Anfrage",
     "stay.step2":"Wir bestätigen die Daten und senden Ihnen einen sicheren Zahlungslink",
     "stay.step3":"Restbetrag 30 Tage vor Anreise",
@@ -589,9 +592,11 @@ function resetPriceCard(){
   const priceCompare = document.getElementById('priceCompare');
   const priceTotal = document.getElementById('priceTotal');
   const priceHint = document.getElementById('priceHint');
+  const priceSynced = document.getElementById('priceSynced');
   if (priceValue) priceValue.textContent = '—';
   if (priceCompare){ priceCompare.hidden = true; priceCompare.textContent = ''; }
   if (priceTotal){ priceTotal.hidden = true; priceTotal.textContent = ''; }
+  if (priceSynced){ priceSynced.hidden = true; priceSynced.textContent = ''; }
   if (priceHint){
     priceHint.hidden = false;
     priceHint.textContent = t('stay.priceHint');
@@ -672,6 +677,15 @@ async function refreshQuoteFromForm(){
       });
     }
     if (priceHint) priceHint.hidden = true;
+    const priceSynced = document.getElementById('priceSynced');
+    if (priceSynced && data.syncedAt){
+      const lang = document.documentElement.getAttribute('data-lang') || 'fr';
+      const formatted = new Date(data.syncedAt).toLocaleDateString(lang, { dateStyle: 'medium' });
+      priceSynced.hidden = false;
+      priceSynced.textContent = t('stay.priceSynced', { date: formatted });
+    } else if (priceSynced){
+      priceSynced.hidden = true;
+    }
   } catch (err) {
     if (reqId !== quoteRequestId) return;
     if (priceValue) priceValue.textContent = '—';

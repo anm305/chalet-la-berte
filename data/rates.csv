@@ -1,0 +1,6 @@
+# Tarifs Airbnb (CHF / nuit) — généré par scripts/import-rates.mjs
+# Importé le 2026-08-13 depuis /tmp/airbnb-sample.csv
+date,price
+2026-09-01,800
+2026-09-02,820
+2026-09-03,850
