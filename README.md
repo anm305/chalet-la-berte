@@ -10,42 +10,40 @@ npm run build
 npx vercel dev   # nécessaire pour /api/quote
 ```
 
-## Prix indexés sur Airbnb (gratuit)
+## Tarifs (Excel → site)
 
-Airbnb ne publie pas les prix via iCal. Solution gratuite :
+Fichier source : **`data/tarifs.xlsx`**
 
-1. Installer [Airbnb Host Rate Exporter](https://chromewebstore.google.com/detail/airbnb-host-rate-exporter/kcpoffmbgofohipihbaaphemjodoeinc) (Chrome)
-2. Calendrier hôte Airbnb → vue année → exporter le CSV
-3. Importer dans le projet :
+1. Ouvre `data/tarifs.xlsx` (Excel / Numbers / Google Sheets)
+2. Onglet **Saisons** : plages de dates + prix Airbnb / nuit (CHF)
+3. Onglet **Exceptions** : dates précises (prioritaires)
+4. Enregistre, puis :
 
 ```bash
-npm run import:rates -- ~/Downloads/airbnb-rates.csv
-git add data/rates.csv && git commit -m "Update Airbnb rates" && git push
+npm run import:rates
+git add data/tarifs.xlsx data/rates.csv
+git commit -m "Update rates"
+git push
 ```
 
-Le site calcule alors : **somme des nuits Airbnb − `PUBLIC_DIRECT_DISCOUNT_PERCENT`** (défaut 10 %).
+Le site affiche **prix Airbnb − 10 %** (`PUBLIC_DIRECT_DISCOUNT_PERCENT`).
 
-Priorité des sources de prix :
+Recréer le modèle (écrase le fichier) :
+
+```bash
+npm run tarifs:init
+```
+
+### Priorité des sources
 1. PriceLabs (si configuré)
-2. `data/rates.csv`
-3. `PUBLIC_AIRBNB_NIGHTLY_CHF` (tarif plat de secours)
-
-## PriceLabs (option payante, auto)
-
-```bash
-PRICELABS_API_KEY=...
-PRICELABS_LISTING_ID=...
-PRICELABS_PMS=airbnb
-PUBLIC_DIRECT_DISCOUNT_PERCENT=10
-```
+2. `data/rates.csv` (généré depuis l’Excel)
+3. `PUBLIC_AIRBNB_NIGHTLY_CHF` (tarif plat)
 
 ## Calendrier (disponibilités)
 
 ```bash
 ICAL_FEED_URLS=https://www.airbnb.fr/calendar/ical/XXXX.ics
 ```
-
-Sans URL → « indiquez vos dates ».
 
 ## Formulaire
 

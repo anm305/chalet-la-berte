@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build.mjs",
-    "import:rates": "node scripts/import-rates.mjs"
+    "tarifs:init": "python3 scripts/create-tarifs-xlsx.py init",
+    "import:rates": "python3 scripts/create-tarifs-xlsx.py import"
   }
 }
