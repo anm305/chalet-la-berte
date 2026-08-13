@@ -12,8 +12,8 @@ const LODGINGS = {
 /* Room sets for each listing — matches 4+1 and 3+2 splits */
 const ROOM_CATALOG = {
   1: { src: 'images/chambre-1.jpg', titleKey: 'room1.title', bedsKey: 'room1.beds', alt: 'Chambre 1 — lit queen avec vue sur la neige' },
-  2: { src: 'images/chambre-2.jpg', titleKey: 'room2.title', bedsKey: 'room2.beds', alt: 'Chambre 2 — lit double' },
-  3: { src: 'images/chambre-3.jpg', titleKey: 'room3.title', bedsKey: 'room3.beds', alt: 'Chambre 3 — lit queen, mur en bois' },
+  2: { src: 'images/chambre-3.jpg', titleKey: 'room2.title', bedsKey: 'room2.beds', alt: 'Chambre 2 — lit queen, mur en bois' },
+  3: { src: 'images/chambre-2.jpg', titleKey: 'room3.title', bedsKey: 'room3.beds', alt: 'Les Drus — lit double' },
   4: { src: 'images/chambre-4.jpg', titleKey: 'room4.title', bedsKey: 'room4.beds', alt: 'Chambre 4 — lits simples, superposé et couchage d\'appoint' },
   5: { src: 'images/chambre-5.jpg', titleKey: 'room5.title', bedsKey: 'room5.beds', alt: 'Chambre 5 — lit queen avec vue montagne' }
 };
