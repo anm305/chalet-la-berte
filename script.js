@@ -121,9 +121,13 @@ const I18N = {
     "stay.datesHint":"Indiquez vos dates, nous vous répondons sous 24 h.",
     "stay.datesCta":"Envoyer une demande",
     "stay.calSync":"Dernière synchronisation : {date}",
-    "stay.priceEyebrow":"Tarif indicatif", "stay.priceUnit":"/ nuit",
+    "stay.priceEyebrow":"Tarif selon vos dates", "stay.priceUnit":"/ nuit",
     "stay.priceDetail":"Chalet entier · jusqu'à 15 personnes · linge inclus",
-    "stay.priceCompare":"{discount} % de moins que le tarif Airbnb de référence ({airbnb} CHF).",
+    "stay.priceHint":"Choisissez vos dates dans le formulaire pour voir le tarif (Airbnb − remise directe).",
+    "stay.priceCompare":"{discount} % de moins que le tarif Airbnb pour ces dates ({airbnb} CHF / nuit).",
+    "stay.priceTotal":"{total} CHF pour {nights} nuits",
+    "stay.priceLoading":"Calcul du tarif…",
+    "stay.priceUnavailable":"Tarif à confirmer pour ces dates — envoyez votre demande.",
     "stay.step1":"Vous envoyez votre demande",
     "stay.step2":"Nous confirmons les dates et vous envoyons un lien de paiement sécurisé",
     "stay.step3":"Solde 30 jours avant l'arrivée",
@@ -207,9 +211,13 @@ const I18N = {
     "stay.datesHint":"Tell us your dates — we reply within 24 hours.",
     "stay.datesCta":"Send a request",
     "stay.calSync":"Last synced: {date}",
-    "stay.priceEyebrow":"Indicative rate", "stay.priceUnit":"/ night",
+    "stay.priceEyebrow":"Rate for your dates", "stay.priceUnit":"/ night",
     "stay.priceDetail":"Whole chalet · up to 15 guests · linens included",
-    "stay.priceCompare":"{discount}% less than the reference Airbnb rate ({airbnb} CHF).",
+    "stay.priceHint":"Pick your dates in the form to see the rate (Airbnb minus direct discount).",
+    "stay.priceCompare":"{discount}% less than the Airbnb rate for these dates ({airbnb} CHF / night).",
+    "stay.priceTotal":"{total} CHF for {nights} nights",
+    "stay.priceLoading":"Calculating rate…",
+    "stay.priceUnavailable":"Rate to confirm for these dates — send your request.",
     "stay.step1":"You send your request",
     "stay.step2":"We confirm the dates and send you a secure payment link",
     "stay.step3":"Balance due 30 days before arrival",
@@ -293,9 +301,13 @@ const I18N = {
     "stay.datesHint":"Nennen Sie uns Ihre Daten — wir antworten innert 24 Stunden.",
     "stay.datesCta":"Anfrage senden",
     "stay.calSync":"Letzte Synchronisation: {date}",
-    "stay.priceEyebrow":"Richtpreis", "stay.priceUnit":"/ Nacht",
+    "stay.priceEyebrow":"Preis für Ihre Daten", "stay.priceUnit":"/ Nacht",
     "stay.priceDetail":"Ganzes Chalet · bis zu 15 Gäste · Bettwäsche inklusive",
-    "stay.priceCompare":"{discount} % weniger als der Airbnb-Richtpreis ({airbnb} CHF).",
+    "stay.priceHint":"Wählen Sie Ihre Daten im Formular, um den Preis zu sehen (Airbnb minus Direkt-Rabatt).",
+    "stay.priceCompare":"{discount} % weniger als der Airbnb-Preis für diese Daten ({airbnb} CHF / Nacht).",
+    "stay.priceTotal":"{total} CHF für {nights} Nächte",
+    "stay.priceLoading":"Preis wird berechnet…",
+    "stay.priceUnavailable":"Preis für diese Daten zu bestätigen — senden Sie Ihre Anfrage.",
     "stay.step1":"Sie senden Ihre Anfrage",
     "stay.step2":"Wir bestätigen die Daten und senden Ihnen einen sicheren Zahlungslink",
     "stay.step3":"Restbetrag 30 Tage vor Anreise",
@@ -512,6 +524,21 @@ contactForm.addEventListener('submit', async (e) => {
   };
   if (CONFIG.formAccessKey) payload.access_key = CONFIG.formAccessKey;
 
+  // Attach last quoted total if available (helps you match Airbnb − discount)
+  try {
+    const quoteRes = await fetch(`/api/quote?checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(checkout)}`);
+    if (quoteRes.ok) {
+      const quote = await quoteRes.json();
+      if (quote.direct) {
+        payload.quoted_direct_total = quote.direct.total;
+        payload.quoted_airbnb_total = quote.airbnb.total;
+        payload.quoted_nights = quote.nights;
+        payload.quoted_discount_percent = quote.discountPercent;
+        payload.quoted_source = quote.source;
+      }
+    }
+  } catch (_) { /* quote is optional */ }
+
   try {
     const res = await fetch(endpoint, {
       method: 'POST',
@@ -555,25 +582,113 @@ function setupPhone(){
   }
 }
 
-function setupPricing(){
+let quoteRequestId = 0;
+
+function resetPriceCard(){
   const priceValue = document.getElementById('priceValue');
   const priceCompare = document.getElementById('priceCompare');
+  const priceTotal = document.getElementById('priceTotal');
+  const priceHint = document.getElementById('priceHint');
+  if (priceValue) priceValue.textContent = '—';
+  if (priceCompare){ priceCompare.hidden = true; priceCompare.textContent = ''; }
+  if (priceTotal){ priceTotal.hidden = true; priceTotal.textContent = ''; }
+  if (priceHint){
+    priceHint.hidden = false;
+    priceHint.textContent = t('stay.priceHint');
+  }
+}
+
+function setupPricing(){
+  resetPriceCard();
+  // Keep flat fallback visible only when PriceLabs isn't used and a base rate exists
   const pricing = CONFIG.pricing;
-  if (!priceValue) return;
-  if (pricing && pricing.directNightly){
+  const priceValue = document.getElementById('priceValue');
+  const priceCompare = document.getElementById('priceCompare');
+  const priceHint = document.getElementById('priceHint');
+  if (pricing && pricing.directNightly && priceValue && priceValue.textContent === '—'){
     priceValue.textContent = String(pricing.directNightly);
+    if (priceHint) priceHint.hidden = true;
     if (priceCompare){
       priceCompare.hidden = false;
-      priceCompare.setAttribute('data-i18n-dynamic', 'stay.priceCompare');
       priceCompare.textContent = t('stay.priceCompare', {
         discount: String(pricing.discountPercent),
         airbnb: String(pricing.airbnbNightly)
       });
     }
-  } else {
-    priceValue.textContent = '[PRIX / NUIT]';
-    if (priceCompare) priceCompare.hidden = true;
   }
+}
+
+async function refreshQuoteFromForm(){
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  const checkin = form.checkin.value;
+  const checkout = form.checkout.value;
+  const priceValue = document.getElementById('priceValue');
+  const priceCompare = document.getElementById('priceCompare');
+  const priceTotal = document.getElementById('priceTotal');
+  const priceHint = document.getElementById('priceHint');
+
+  if (!checkin || !checkout || checkout <= checkin){
+    setupPricing();
+    return;
+  }
+
+  const reqId = ++quoteRequestId;
+  if (priceHint){
+    priceHint.hidden = false;
+    priceHint.textContent = t('stay.priceLoading');
+  }
+  if (priceValue) priceValue.textContent = '…';
+
+  try {
+    const res = await fetch(`/api/quote?checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(checkout)}`);
+    const data = await res.json();
+    if (reqId !== quoteRequestId) return;
+
+    if (!res.ok || !data.direct){
+      if (priceValue) priceValue.textContent = '—';
+      if (priceTotal) priceTotal.hidden = true;
+      if (priceCompare) priceCompare.hidden = true;
+      if (priceHint){
+        priceHint.hidden = false;
+        priceHint.textContent = t('stay.priceUnavailable');
+      }
+      return;
+    }
+
+    if (priceValue) priceValue.textContent = String(data.direct.avgNightly);
+    if (priceTotal){
+      priceTotal.hidden = false;
+      priceTotal.textContent = t('stay.priceTotal', {
+        total: String(data.direct.total),
+        nights: String(data.nights)
+      });
+    }
+    if (priceCompare){
+      priceCompare.hidden = false;
+      priceCompare.textContent = t('stay.priceCompare', {
+        discount: String(data.discountPercent),
+        airbnb: String(data.airbnb.avgNightly)
+      });
+    }
+    if (priceHint) priceHint.hidden = true;
+  } catch (err) {
+    if (reqId !== quoteRequestId) return;
+    if (priceValue) priceValue.textContent = '—';
+    if (priceHint){
+      priceHint.hidden = false;
+      priceHint.textContent = t('stay.priceUnavailable');
+    }
+  }
+}
+
+function bindQuoteInputs(){
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  ['checkin', 'checkout'].forEach((name) => {
+    form[name].addEventListener('change', refreshQuoteFromForm);
+    form[name].addEventListener('input', refreshQuoteFromForm);
+  });
 }
 
 /* ============ SITE SEASON (SUMMER / WINTER) ============ */
@@ -746,3 +861,4 @@ applySiteSeason(resolveSeason());
 setupStayPanel();
 setupPhone();
 setupPricing();
+bindQuoteInputs();

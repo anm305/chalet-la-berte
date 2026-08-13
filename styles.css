@@ -575,7 +575,9 @@ img{max-width:100%; display:block;}
 .price-card{display:flex; flex-direction:column;}
 .price-amount{font-family:var(--display); font-size:2.1rem; margin:0.2rem 0 0.3rem;}
 .price-unit{font-size:1rem; color:var(--ink-soft); font-family:var(--body);}
-.price-compare{font-size:var(--micro); color:var(--brass); margin:0 0 0.8rem; line-height:1.45;}
+.price-total{font-size:1rem; color:var(--pine); margin:0 0 0.5rem; font-weight:500;}
+.price-compare{font-size:var(--micro); color:var(--brass); margin:0 0 0.5rem; line-height:1.45;}
+.price-hint{font-size:var(--micro); color:var(--ink-soft); margin:0 0 0.8rem; line-height:1.45;}
 .price-detail{font-size:0.82rem; color:var(--ink-soft); margin:0 0 1.2rem;}
 .pay-steps{
   list-style:none; padding:0; margin:0 0 1rem;
