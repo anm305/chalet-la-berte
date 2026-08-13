@@ -1,6 +1,11 @@
-# Tarifs Airbnb (CHF / nuit) — généré par scripts/import-rates.mjs
-# Importé le 2026-08-13 depuis /tmp/airbnb-sample.csv
+# Tarifs Airbnb (CHF / nuit) — source gratuite pour /api/quote
+#
+# Mise à jour :
+# 1. Extension Chrome « Airbnb Host Rate Exporter »
+# 2. Calendrier hôte Airbnb → exporter le CSV
+# 3. npm run import:rates -- ~/Downloads/airbnb-rates.csv
+# 4. git add data/rates.csv && git commit -m "Update rates" && git push
+#
+# Format : date,price
+
 date,price
-2026-09-01,800
-2026-09-02,820
-2026-09-03,850
