@@ -293,69 +293,55 @@ img{max-width:100%; display:block;}
 }
 @keyframes scrollpulse{0%{opacity:0.2; transform:scaleY(0.4); transform-origin:top;} 50%{opacity:1; transform:scaleY(1); transform-origin:top;} 100%{opacity:0.2; transform:scaleY(0.4); transform-origin:top;}}
 
-/* ============ RIDGE DIVIDER — elevation drawing, one vertical line ============ */
+/* ============ RIDGE — The Line skyline: flat base, names above the summits ============ */
 .ridge{
   position:relative;
-  height:96px;
-  line-height:0;
+  height:128px;
   background:var(--snow);
 }
 .ridge--dark{background:var(--pine);}
-.ridge svg{width:100%; height:100%; display:block;}
+.ridge svg{
+  position:absolute;
+  left:0; right:0; bottom:0;
+  width:100%;
+  height:78px;
+  display:block;
+}
 .ridge-fill{fill:var(--pine);}
 .ridge--dark .ridge-fill{fill:var(--snow);}
-.ridge-crest{
-  fill:none;
-  stroke:var(--brass);
-  stroke-width:1.25;
-  stroke-linejoin:miter;
-  stroke-linecap:square;
-  vector-effect:non-scaling-stroke;
+.ridge-names{
+  list-style:none;
+  margin:0;
+  padding:10px 0 0;
+  position:relative;
+  height:50px;
 }
-.ridge-mark{
-  stroke:var(--brass);
-  stroke-width:1.25;
-  vector-effect:non-scaling-stroke;
-}
-.ridge--dark .ridge-crest,
-.ridge--dark .ridge-mark{stroke:var(--brass-light);}
-.ridge::before{
-  content:"";
+.ridge-names li{
   position:absolute;
-  z-index:1;
-  top:17px;
-  left:var(--mark, 50%);
-  width:16px;
-  height:1px;
-  background:var(--brass);
-}
-.ridge--note-start::before{transform:translateX(-100%);}
-.ridge--dark::before{background:var(--brass-light);}
-.ridge::after{
-  content:attr(data-elevation);
-  position:absolute;
-  z-index:1;
-  top:11px;
-  left:calc(var(--mark, 50%) + 22px);
+  top:10px;
+  left:var(--at);
+  transform:translateX(-50%);
+  width:max-content;
+  max-width:22vw;
+  text-align:center;
   font-family:var(--mono);
-  font-size:11px;
-  letter-spacing:0.18em;
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:0.14em;
+  line-height:1.35;
   text-transform:uppercase;
-  color:var(--brass);
-  white-space:nowrap;
+  color:var(--pine);
 }
-.ridge--note-start::after{
-  left:auto;
-  right:calc(100% - var(--mark, 50%) + 22px);
-}
-.ridge--dark::after{color:var(--brass-light);}
+.ridge--dark .ridge-names li{color:var(--brass-light);}
 @media(max-width:720px){
-  .ridge{height:72px;}
-  .ridge::before{top:13px; width:12px;}
-  .ridge::after{
-    top:8px;
+  .ridge{height:108px;}
+  .ridge svg{height:62px;}
+  .ridge-names{height:46px; padding-top:6px;}
+  .ridge-names li{
+    top:6px;
+    font-size:8px;
     letter-spacing:0.08em;
-    font-size:10px;
+    max-width:24vw;
   }
 }
 
