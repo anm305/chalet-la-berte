@@ -321,6 +321,9 @@ img{max-width:100%; display:block;}
   stroke-linejoin:round;
   filter:drop-shadow(0 5px 1.2px rgba(28,36,32,0.18));
 }
+.profil--cols .profil-stroke{stroke-width:14;}
+.profil--glacier .profil-stroke{stroke-width:18;}
+.profil--aiguilles .profil-stroke{stroke-width:22;}
 .profil--pine .profil-stroke{
   filter:drop-shadow(0 6px 1.4px rgba(0,0,0,0.45));
 }
