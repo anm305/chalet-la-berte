@@ -1,69 +1,76 @@
-// Génère des aperçus SVG « The Line » pour separateurs-the-line.html
+// Génère des aperçus SVG « The Line » — silhouette caricaturée (beaucoup d’ups/downs)
 import { writeFile } from "node:fs/promises";
 
 const W = 1200;
 const NNBSP = "\u202f";
 
+// Crête caricaturée style The Line Summit :
+// beaucoup de dents / cols entre les sommets nommés, amplitude verticale forte.
+// Format: [xNorm, altitudeVisuelle, name?, altitudeRéelle?]
+// Silhouette caricaturée type The Line Summit (Chamonix / Mont-Blanc) :
+// amplitude irrégulière, cols profonds, sommets nommés qui dominent clairement.
 const RIDGE = [
-  [0.0, 1760],
-  [0.08, 1527, "Forclaz", 1527],
-  [0.2, 2100],
-  [0.32, 2665, "Arpette", 2665],
-  [0.42, 2400],
-  [0.55, 3271, "Orny", 3271],
-  [0.65, 3050],
-  [0.78, 3540, "Tour", 3540],
-  [0.88, 3200],
-  [0.96, 3901, "Argentière", 3901],
-  [1.0, 2800],
+  [0.0, 1720],
+  [0.025, 1980],
+  [0.045, 1560],
+  [0.065, 1880],
+  [0.085, 1527, "Forclaz", 1527], // col
+  [0.105, 2040],
+  [0.12, 1680],
+  [0.14, 2280],
+  [0.155, 1960],
+  [0.175, 2410],
+  [0.195, 2120],
+  [0.215, 2550],
+  [0.235, 1980], // creux marqué
+  [0.255, 2620],
+  [0.275, 2340],
+  [0.3, 2665, "Arpette", 2665],
+  [0.32, 2180],
+  [0.34, 2480],
+  [0.355, 1880], // col profond (fenêtre)
+  [0.375, 2360],
+  [0.39, 2060],
+  [0.41, 2780],
+  [0.425, 2420],
+  [0.445, 3010],
+  [0.46, 2640],
+  [0.48, 2890],
+  [0.495, 2510],
+  [0.515, 3180],
+  [0.535, 3271, "Orny", 3271],
+  [0.555, 2780],
+  [0.57, 3090],
+  [0.585, 2460], // fenêtre
+  [0.605, 2920],
+  [0.62, 2680],
+  [0.64, 3360],
+  [0.655, 2980],
+  [0.675, 3480],
+  [0.69, 3120],
+  [0.71, 3540, "Tour", 3540],
+  [0.73, 3040],
+  [0.745, 3380],
+  [0.76, 2820], // creux
+  [0.78, 3520],
+  [0.795, 3180],
+  [0.815, 3660],
+  [0.83, 3280],
+  [0.85, 3480],
+  [0.865, 3020],
+  [0.885, 3720],
+  [0.9, 3440],
+  [0.92, 3901, "Argentière", 3901],
+  [0.94, 3360],
+  [0.96, 2980],
+  [0.98, 2720],
+  [1.0, 2480],
 ];
 
-function rng(seed) {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function buildPath(seed, levels, roughness) {
-  const rand = rng(seed);
-  const out = [];
-  for (let k = 0; k < RIDGE.length - 1; k++) {
-    const [xa, ha] = RIDGE[k];
-    const [xb, hb] = RIDGE[k + 1];
-    const steps = 5;
-    let seg = [];
-    for (let s = 0; s <= steps; s++) {
-      const t = s / steps;
-      const h = hb > ha ? ha + (hb - ha) * t ** 1.7 : hb + (ha - hb) * (1 - t) ** 1.7;
-      seg.push([xa + (xb - xa) * t, h]);
-    }
-    let amp = roughness * (Math.abs(hb - ha) + 180) / steps;
-    for (let l = 0; l < levels; l++) {
-      const next = [seg[0]];
-      for (let i = 0; i < seg.length - 1; i++) {
-        const [x0, y0] = seg[i];
-        const [x1, y1] = seg[i + 1];
-        const t = 0.5 + (rand() - 0.5) * 0.28;
-        let h = y0 + (y1 - y0) * t + (rand() * 2 - 1) * amp;
-        h = Math.min(Math.max(ha, hb) - 15, Math.max(Math.min(ha, hb) - 140, h));
-        next.push([x0 + (x1 - x0) * t, h], seg[i + 1]);
-      }
-      seg = next;
-      amp *= 0.5;
-    }
-    out.push(...(k === 0 ? seg : seg.slice(1)));
-  }
-  return out;
-}
-
-function scale(pts, top, bottom, hMin = 1400, hMax = 4000) {
+function scale(pts, top, bottom, hMin = 1450, hMax = 4000) {
   return pts.map(([x, h]) => {
-    const n = ((h - hMin) / (hMax - hMin)) ** 1.2;
+    // léger écrasement haut pour garder de l’air aux labels, mais amplitude forte
+    const n = ((h - hMin) / (hMax - hMin)) ** 0.92;
     return [40 + x * (W - 80), bottom - n * (bottom - top)];
   });
 }
@@ -82,8 +89,7 @@ const d = (pts) => "M" + pts.map(([x, y]) => `${fmt(x)} ${fmt(y)}`).join("L");
 const alt = (h) => `${String(h).replace(/\B(?=(\d{3})+(?!\d))/g, NNBSP)}${NNBSP}m`;
 
 const peaks = RIDGE.filter((p) => p[2]);
-const raw = buildPath(19, 2, 0.45);
-const pts = scale(raw, 90, 210);
+const pts = scale(RIDGE, 78, 218);
 
 function labels(style) {
   return peaks
@@ -91,59 +97,66 @@ function labels(style) {
       const x = 40 + xn * (W - 80);
       const y = yAt(pts, x);
       if (style === "flat") {
-        return `<line x1="${fmt(x)}" y1="${fmt(y - 4)}" x2="${fmt(x)}" y2="${fmt(y - 18)}" stroke="currentColor" stroke-width="0.8"/><text x="${fmt(x)}" y="${fmt(y - 24)}" text-anchor="middle" font-size="11" letter-spacing="0.12em">${name.toUpperCase()}</text><text x="${fmt(x)}" y="${fmt(y - 38)}" text-anchor="middle" font-size="10" opacity="0.7">${alt(h)}</text>`;
+        return `<line x1="${fmt(x)}" y1="${fmt(y - 3)}" x2="${fmt(x)}" y2="${fmt(y - 16)}" stroke="currentColor" stroke-width="0.7"/><text x="${fmt(x)}" y="${fmt(y - 22)}" text-anchor="middle" font-size="10" letter-spacing="0.14em">${name.toUpperCase()}</text><text x="${fmt(x)}" y="${fmt(y - 35)}" text-anchor="middle" font-size="9" opacity="0.7">${alt(h)}</text>`;
       }
       if (style === "tilt") {
-        return `<line x1="${fmt(x)}" y1="${fmt(y - 3)}" x2="${fmt(x)}" y2="${fmt(y - 14)}" stroke="currentColor" stroke-width="0.7"/><text transform="translate(${fmt(x + 4)} ${fmt(y - 18)}) rotate(-28)" font-size="12">${name} – ${alt(h)}</text>`;
+        return `<circle cx="${fmt(x)}" cy="${fmt(y)}" r="1.4" fill="currentColor"/><text transform="translate(${fmt(x + 3)} ${fmt(y - 10)}) rotate(-32)" font-size="11">${name} – ${alt(h)}</text>`;
       }
-      // whisper: name only tiny
-      return `<text x="${fmt(x)}" y="${fmt(y - 10)}" text-anchor="middle" font-size="9" letter-spacing="0.16em">${name.toUpperCase()}</text>`;
+      return `<text x="${fmt(x)}" y="${fmt(y - 9)}" text-anchor="middle" font-size="9" letter-spacing="0.16em">${name.toUpperCase()}</text>`;
     })
     .join("");
 }
 
 const path = d(pts);
-const baseY = 218;
+const baseY = 226;
+const SW = 1.6; // fil fin ≈ 1,5 mm The Line
+
+// Variante encore plus « dentée » pour les plans lointains
+function offsetRidge(dx, dh) {
+  return RIDGE.map(([x, h, ...rest], i) => {
+    const wobble = Math.sin(i * 1.7) * 90 + Math.cos(i * 0.9) * 60;
+    return [Math.min(1, Math.max(0, x + dx)), Math.max(1400, h + dh + wobble), ...rest];
+  });
+}
 
 const designs = {
   fil: {
     title: "01 · Fil d’acier",
-    blurb: "Trait très fin, comme la découpe laser The Line. Labels droits au-dessus des sommets.",
-    svg: `<svg viewBox="0 0 ${W} 250" role="img"><g fill="currentColor" font-family="Work Sans, sans-serif">${labels("flat")}<path d="${path}" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></g></svg>`,
+    blurb: "Trait très fin, dents et cols marqués comme la découpe The Line. Labels droits au-dessus des sommets.",
+    svg: `<svg viewBox="0 0 ${W} 250" role="img"><g fill="currentColor" font-family="Work Sans, sans-serif">${labels("flat")}<path d="${path}" fill="none" stroke="currentColor" stroke-width="${SW}" stroke-linejoin="round" stroke-linecap="round"/></g></svg>`,
   },
   socle: {
     title: "02 · Sur socle",
-    blurb: "Même fil, avec une base plate — l’objet mural The Line posé sur le mur.",
-    svg: `<svg viewBox="0 0 ${W} 250" role="img"><g fill="currentColor" font-family="Work Sans, sans-serif">${labels("whisper")}<path d="${path}L${W - 40} ${baseY}L40 ${baseY}Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="miter"/><line x1="40" y1="${baseY}" x2="${W - 40}" y2="${baseY}" stroke="currentColor" stroke-width="2"/></g></svg>`,
+    blurb: "Même silhouette dentelée, avec une base plate — l’objet mural The Line posé sur le mur.",
+    svg: `<svg viewBox="0 0 ${W} 250" role="img"><g fill="currentColor" font-family="Work Sans, sans-serif">${labels("whisper")}<path d="${path}L${W - 40} ${baseY}L40 ${baseY}Z" fill="none" stroke="currentColor" stroke-width="${SW}" stroke-linejoin="miter"/><line x1="40" y1="${baseY}" x2="${W - 40}" y2="${baseY}" stroke="currentColor" stroke-width="${SW}"/></g></svg>`,
   },
   incline: {
     title: "03 · Légende inclinée",
-    blurb: "Fil fin + cote en diagonale légère, plus topo que murale.",
-    svg: `<svg viewBox="0 0 ${W} 250" role="img"><g fill="currentColor" font-family="Work Sans, sans-serif">${labels("tilt")}<path d="${path}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/></g></svg>`,
+    blurb: "Fil dentelé + cotes en diagonale (comme l’autocollant The Line Summit).",
+    svg: `<svg viewBox="0 0 ${W} 250" role="img"><g fill="currentColor" font-family="Work Sans, sans-serif">${labels("tilt")}<path d="${path}" fill="none" stroke="currentColor" stroke-width="${SW}" stroke-linejoin="round" stroke-linecap="round"/></g></svg>`,
   },
   triple: {
     title: "04 · Trois fils",
-    blurb: "Trois horizons fins empilés (cols / glacier / lointain), comme des plans de profondeur.",
+    blurb: "Trois horizons dentelés empilés (cols / glacier / lointain), plans de profondeur.",
     svg: (() => {
       const layers = [
-        { seed: 11, top: 150, bottom: 230, op: 0.35, sw: 1.4 },
-        { seed: 41, top: 110, bottom: 215, op: 0.55, sw: 1.8 },
-        { seed: 73, top: 70, bottom: 200, op: 1, sw: 2.2 },
+        { ridge: offsetRidge(0.012, -380), top: 145, bottom: 232, op: 0.28, sw: 1.2 },
+        { ridge: offsetRidge(-0.01, -160), top: 110, bottom: 222, op: 0.5, sw: 1.35 },
+        { ridge: RIDGE, top: 70, bottom: 210, op: 1, sw: SW },
       ];
       const paths = layers
         .map((L) => {
-          const p = scale(buildPath(L.seed, 2, 0.4), L.top, L.bottom);
-          return `<path d="${d(p)}" fill="none" stroke="currentColor" stroke-width="${L.sw}" opacity="${L.op}" stroke-linejoin="round"/>`;
+          const p = scale(L.ridge, L.top, L.bottom);
+          return `<path d="${d(p)}" fill="none" stroke="currentColor" stroke-width="${L.sw}" opacity="${L.op}" stroke-linejoin="round" stroke-linecap="round"/>`;
         })
         .join("");
-      // labels only on front layer peaks
-      const front = scale(buildPath(73, 2, 0.4), 70, 200);
+      const front = scale(RIDGE, 70, 210);
       const labs = peaks
         .slice(2)
         .map(([xn, , name, h]) => {
           const x = 40 + xn * (W - 80);
           const y = yAt(front, x);
-          return `<text x="${fmt(x)}" y="${fmt(y - 12)}" text-anchor="middle" font-size="10" letter-spacing="0.1em">${name.toUpperCase()} · ${alt(h)}</text>`;
+          return `<text x="${fmt(x)}" y="${fmt(y - 11)}" text-anchor="middle" font-size="10" letter-spacing="0.1em">${name.toUpperCase()} · ${alt(h)}</text>`;
         })
         .join("");
       return `<svg viewBox="0 0 ${W} 250" role="img"><g fill="currentColor" font-family="Work Sans, sans-serif">${labs}${paths}</g></svg>`;
@@ -185,13 +198,15 @@ const html = `<!DOCTYPE html>
   .stage--pine{background:var(--pine);color:var(--fog);padding:1.6rem 1.2rem;margin-top:0.6rem;}
   .stage--snow{background:var(--snow);}
   .note{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--brass);margin-top:2.5rem;}
+  .ref{margin:1.4rem 0 0;padding:1rem 0 0;border-top:1px dashed rgba(28,36,32,0.15);font-size:0.88rem;color:var(--ink-soft);line-height:1.5;}
 </style>
 </head>
 <body>
   <div class="wrap">
     <p class="eyebrow">Style The Line</p>
     <h1>Quatre lectures du fil</h1>
-    <p class="lead">Même crête inspirée de Trient, trait beaucoup plus fin — proche du fil d’acier 1,5&nbsp;mm de The Line. Quatre traitements typographiques et de profondeur.</p>
+    <p class="lead">Silhouette Trient caricaturée : beaucoup plus d’ups &amp; downs entre les sommets nommés — comme Chamonix / Mont-Blanc chez The Line. Trait fin ≈&nbsp;1,5&nbsp;mm.</p>
+    <p class="ref">Réf. produit : une seule ligne d’acier, dents serrées, cols marqués, labels au-dessus des pics — pas une rampe douce.</p>
     ${cards}
     <p class="note">Dites 01, 02, 03 ou 04 — on l’applique aux trois séparateurs du site.</p>
   </div>
@@ -200,4 +215,4 @@ const html = `<!DOCTYPE html>
 `;
 
 await writeFile(new URL("../separateurs-the-line.html", import.meta.url), html);
-console.log("wrote separateurs-the-line.html");
+console.log("wrote separateurs-the-line.html —", RIDGE.length, "points,", peaks.length, "labels");
