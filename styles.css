@@ -293,22 +293,56 @@ img{max-width:100%; display:block;}
 }
 @keyframes scrollpulse{0%{opacity:0.2; transform:scaleY(0.4); transform-origin:top;} 50%{opacity:1; transform:scaleY(1); transform-origin:top;} 100%{opacity:0.2; transform:scaleY(0.4); transform-origin:top;}}
 
-/* ============ RIDGE DIVIDER (signature) ============ */
-.ridge{position:relative; height:70px; line-height:0;}
-.ridge svg{width:100%; height:100%; display:block;}
-.ridge--light{background:var(--snow);}
-.ridge--light svg path{fill:var(--pine);}
-.ridge--dark{background:var(--pine);}
-.ridge--dark svg path{fill:var(--snow);}
-.ridge::after{
-  content:attr(data-elevation);
-  position:absolute; right:6vw; top:8px;
-  font-family:var(--mono); font-size:var(--micro); letter-spacing:0.08em;
-  color:var(--brass); white-space:nowrap;
+/* ============ RIDGE — The Line skyline: flat base, names above the summits ============ */
+.ridge{
+  position:relative;
+  height:128px;
+  background:var(--snow);
 }
-.ridge--dark::after{color:var(--brass-light);}
-@media(max-width:640px){
-  .ridge::after{letter-spacing:0.04em;}
+.ridge--dark{background:var(--pine);}
+.ridge svg{
+  position:absolute;
+  left:0; right:0; bottom:0;
+  width:100%;
+  height:78px;
+  display:block;
+}
+.ridge-fill{fill:var(--pine);}
+.ridge--dark .ridge-fill{fill:var(--snow);}
+.ridge-names{
+  list-style:none;
+  margin:0;
+  padding:10px 0 0;
+  position:relative;
+  height:50px;
+}
+.ridge-names li{
+  position:absolute;
+  top:10px;
+  left:var(--at);
+  transform:translateX(-50%);
+  width:max-content;
+  max-width:22vw;
+  text-align:center;
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:0.14em;
+  line-height:1.35;
+  text-transform:uppercase;
+  color:var(--pine);
+}
+.ridge--dark .ridge-names li{color:var(--brass-light);}
+@media(max-width:720px){
+  .ridge{height:108px;}
+  .ridge svg{height:62px;}
+  .ridge-names{height:46px; padding-top:6px;}
+  .ridge-names li{
+    top:6px;
+    font-size:8px;
+    letter-spacing:0.08em;
+    max-width:24vw;
+  }
 }
 
 /* ============ STATS ============ */
