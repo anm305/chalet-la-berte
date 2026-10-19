@@ -18,7 +18,7 @@ const PROFILES = {
   cols: {
     title: "Profil des cols et fenêtres autour de Trient",
     seed: 11,
-    stroke: 14,
+    stroke: 4.5,
     hMin: 1400,
     hMax: 3000,
     ridge: [
@@ -39,7 +39,7 @@ const PROFILES = {
   glacier: {
     title: "Profil de la couronne du glacier du Trient",
     seed: 41,
-    stroke: 18,
+    stroke: 5,
     hMin: 2600,
     hMax: 3650,
     ridge: [
@@ -60,7 +60,7 @@ const PROFILES = {
   aiguilles: {
     title: "Profil des aiguilles lointaines depuis Trient",
     seed: 73,
-    stroke: 22,
+    stroke: 5.5,
     hMin: 3200,
     hMax: 4200,
     ridge: [
