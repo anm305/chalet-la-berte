@@ -86,7 +86,6 @@
 .stage-cap--end{padding-top:1.35rem; padding-bottom:2.1rem;}
 .stage-cap--snow{background:var(--snow);}
 .stage-cap--pine{background:var(--pine);}
-.stage-cap--paper{background:#F3EEE4;}
 .stage-cap .eyebrow{margin-bottom:0.4rem;}
 .stage-title{
   font-family:var(--display);
@@ -174,12 +173,12 @@
 
 /* ---------- 03 Profil ---------- */
 .profil{
-  background:#F3EEE4;
+  background:var(--snow);
   color:var(--pine);
 }
 .profil--pine{
   background:var(--pine);
-  color:#F3EEE4;
+  color:var(--fog);
 }
 .profil-scroll{overflow-x:auto; overscroll-behavior-x:contain;}
 .profil svg{

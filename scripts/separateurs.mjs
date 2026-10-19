@@ -1,9 +1,11 @@
-// Génère les profils alpins de separateurs.html à partir des sommets du massif
-// du Trient (altitudes réelles) et d'un relief pseudo-aléatoire à graine fixe.
+// Génère les profils alpins (accueil + page de propositions) à partir des
+// sommets du massif du Trient (altitudes réelles) et d'un relief à graine fixe.
 // Usage : node scripts/separateurs.mjs
 import { readFile, writeFile } from "node:fs/promises";
 
-const PAGE = new URL("../separateurs.html", import.meta.url);
+const ROOT = new URL("..", import.meta.url);
+const PAGE = new URL("separateurs.html", ROOT);
+const HOME = new URL("index.html", ROOT);
 const W = 2400;
 const NNBSP = "\u202f";
 
@@ -189,10 +191,17 @@ function inject(html, name, content) {
 }
 
 const m = massif();
+const profilSvg = profil();
+
 let html = await readFile(PAGE, "utf8");
 html = inject(html, "massif-labels", m.labels);
 html = inject(html, "massif-svg", m.svg);
 html = inject(html, "trait-svg", trait());
-html = inject(html, "profil-svg", profil());
+html = inject(html, "profil-svg", profilSvg);
 await writeFile(PAGE, html);
-console.log("separateurs.html mis à jour");
+
+let home = await readFile(HOME, "utf8");
+home = inject(home, "profil-svg", profilSvg);
+await writeFile(HOME, home);
+
+console.log("separateurs.html et index.html mis à jour");

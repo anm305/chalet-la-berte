@@ -293,22 +293,50 @@ img{max-width:100%; display:block;}
 }
 @keyframes scrollpulse{0%{opacity:0.2; transform:scaleY(0.4); transform-origin:top;} 50%{opacity:1; transform:scaleY(1); transform-origin:top;} 100%{opacity:0.2; transform:scaleY(0.4); transform-origin:top;}}
 
-/* ============ RIDGE DIVIDER (signature) ============ */
-.ridge{position:relative; height:70px; line-height:0;}
-.ridge svg{width:100%; height:100%; display:block;}
-.ridge--light{background:var(--snow);}
-.ridge--light svg path{fill:var(--pine);}
-.ridge--dark{background:var(--pine);}
-.ridge--dark svg path{fill:var(--snow);}
-.ridge::after{
-  content:attr(data-elevation);
-  position:absolute; right:6vw; top:8px;
-  font-family:var(--mono); font-size:var(--micro); letter-spacing:0.08em;
-  color:var(--brass); white-space:nowrap;
+/* ============ PROFIL DIVIDER (signature) ============ */
+.profil{
+  background:var(--snow);
+  color:var(--pine);
 }
-.ridge--dark::after{color:var(--brass-light);}
-@media(max-width:640px){
-  .ridge::after{letter-spacing:0.04em;}
+.profil--pine{
+  background:var(--pine);
+  color:var(--fog);
+}
+.profil-scroll{
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.profil svg{
+  display:block;
+  width:100%;
+  height:auto;
+  shape-rendering:geometricPrecision;
+}
+.profil-stroke{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:18;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 5px 1.2px rgba(28,36,32,0.18));
+}
+.profil--pine .profil-stroke{
+  filter:drop-shadow(0 6px 1.4px rgba(0,0,0,0.45));
+}
+.profil text{
+  fill:currentColor;
+  font-family:var(--body);
+  font-weight:500;
+  letter-spacing:0.01em;
+}
+.profil-labels line{
+  stroke:currentColor;
+  stroke-width:1.5;
+  opacity:0.55;
+}
+@media (max-width:860px){
+  .profil svg{width:1560px; max-width:none;}
 }
 
 /* ============ STATS ============ */
